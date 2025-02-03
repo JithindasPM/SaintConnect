@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaintConnect - Church Management Solution</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --primary-hover: #0b5ed7;
+            --light-blue: #e6f0ff;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link {
+            color: #4b5563;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .btn-get-started {
+            padding: 0.5rem 1.5rem;
+        }
+
+        .hero-section {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            color: var(--primary-color);
+        }
+
+        .features-section {
+            padding: 5rem 0;
+            background-color: #f8f9fa;
+        }
+
+        .feature-card {
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .cta-section {
+            background-color: var(--primary-color);
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .btn-outline-light:hover {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <a class="navbar-brand" href="#">SaintConnect</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#benefits">Benefits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <a href="{% url 'registration' %}" class="btn btn-primary btn-get-started">Get Started</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <h1 class="hero-title mb-4">
+                        Streamline Your Church
+                        <span class="hero-subtitle d-block">Management & Engagement</span>
+                    </h1>
+                    <p class="lead mb-5">
+                        An all-in-one platform that simplifies administration, enhances financial management, and strengthens community engagement for our church.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="btn btn-primary btn-lg px-4">Start Free Trial</a>
+                        <a href="#" class="btn btn-outline-primary btn-lg px-4">Watch Demo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Comprehensive Church Management</h2>
+                <p class="lead text-muted">Everything you need to manage your church effectively</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon">📊</div>
+                            <h3 class="h5 mb-3">Administrative Tools</h3>
+                            <p class="card-text text-muted">Streamline membership management, event scheduling, and communication.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon">💰</div>
+                            <h3 class="h5 mb-3">Financial Management</h3>
+                            <p class="card-text text-muted">Handle donations, track expenses, and manage budgets with ease.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon">🤝</div>
+                            <h3 class="h5 mb-3">Community Engagement</h3>
+                            <p class="card-text text-muted">Foster connection through integrated messaging and event planning.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="text-center">
+                <h2 class="display-5 fw-bold mb-4">Ready to transform your church management?</h2>
+                <p class="lead mb-5">Join thousands of churches already using SaintConnect</p>
+                <a href="#" class="btn btn-light btn-lg px-5">Get Started Today</a>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
