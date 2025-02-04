@@ -30,6 +30,8 @@ from app.views import House_Name_Delete_View
 from app.views import Update_UserProfile_View
 from app.views import Member_Details_View,Delete
 from app.views import All_Member_View
+from app.views import Logout_View
+from app.views import Certificate_View
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -45,6 +47,10 @@ urlpatterns = [
     path('hai/<int:pk>', Member_Details_View.as_view(),name='hai'),
     path('del/<int:pk>', Delete.as_view(),name='del'),
     path('all_members/', All_Member_View.as_view(),name='all_members'),
+    path('logout/', Logout_View.as_view(),name='logout'),
+    path('certificate/', Certificate_View.as_view(),name='certificate'),
+
+
 
 
 

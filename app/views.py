@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.views.generic import View
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate,login,logout
 
 from app.models import User
 from app.models import House_Name
@@ -75,6 +75,11 @@ class Login_View(View):
         form=Login_Form()
         return render(request, "login.html", {"error": "Invalid credentials",'form':form})
     
+class Logout_View(View):
+    def get(self,request,*args,**kwargs):
+        logout(request)
+        return redirect('home')
+    
 class Admin_View(View):
     def get(self,request):
         data = User.objects.filter(is_superuser=False).count()
@@ -137,7 +142,7 @@ class Member_Details_View(View):
 # k================================================
 
 class Delete(View):
-    def get(elf, request,*args,**kwargs):
+    def get(self, request,*args,**kwargs):
         id=kwargs.get('pk')
         User.objects.get(id=id).delete()
 
@@ -146,6 +151,16 @@ class Delete(View):
 
 
 class All_Member_View(View):
-    def get(elf, request,*args,**kwargs):
+    def get(self, request,*args,**kwargs):
         data=User.objects.filter(is_superuser=False)
         return render(request,'all_members.html',{'data':data})
+    
+class Certificate_View(View):
+    def get(self, request,*args,**kwargs):
+        data=UserProfile_Model.objects.get(user_id=request.user)
+        return render(request,'certificates.html',{'data':data})
+
+# class Death_Certificate_Add_View(View):
+#     def get(self, request,*args,**kwargs):
+
+

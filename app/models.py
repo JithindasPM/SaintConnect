@@ -62,3 +62,20 @@ class UserProfile_Model(models.Model):
 def create_profile(sender,instance,created,**kwargs):
         if created:      
             UserProfile_Model.objects.create(user=instance)
+
+class Death_Record(models.Model):
+
+    member = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    date_of_death = models.DateField()
+    place_of_death = models.CharField(max_length=255)
+    funeral_date = models.DateField(blank=True, null=True)
+    funeral_location = models.CharField(max_length=255, blank=True, null=True)
+    burial_place = models.CharField(max_length=255, blank=True, null=True)
+    next_of_kin = models.CharField(max_length=255, blank=True, null=True)
+    contact_number = models.CharField(max_length=15, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_approved=models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.member}"
