@@ -66,22 +66,26 @@ class Login_View(View):
         username = request.POST.get("username")
         password = request.POST.get("password")
         user = authenticate(request, username=username, password=password)
-
         if user is not None:
             login(request, user) 
             if user.is_superuser: 
                 return redirect("admin") 
             else:
                 return redirect("user") 
+        form=Login_Form()
+        return render(request, "login.html", {"error": "Invalid credentials",'form':form})
     
 class Admin_View(View):
     def get(self,request):
-        return render(request,'admin.html')
+        data = User.objects.filter(is_superuser=False).count()
+        house=House_Name.objects.all()
+        return render(request,'admin.html',{'data':data,'house':house})
     
 class User_View(View):
     def get(self,request):
         data=UserProfile_Model.objects.get(user_id=request.user)
-        return render(request,'user.html',{'data':data})
+        obj=UserProfile_Model.objects.filter(house_name_id=data.house_name_id).count()
+        return render(request,'user.html',{'data':data,'obj':obj})
 
 from app.forms import House_Name_Form
 
@@ -120,4 +124,28 @@ class House_Name_Delete_View(View):
         id=kwargs.get('pk')
         House_Name.objects.get(id=id).delete()
         return redirect('house_name')
+    
+class Member_Details_View(View):
+    def get(self, request,*args,**kwargs):
+        house_id=kwargs.get('pk')
+        data=UserProfile_Model.objects.filter(house_name_id=house_id)
+        house_name = House_Name.objects.get(id=house_id).name if House_Name.objects.filter(id=house_id).exists() else None
+        print(house_name)
+        return render(request,'member_details.html',{'data':data,'house_name':house_name})
+    
 
+# k================================================
+
+class Delete(View):
+    def get(elf, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        User.objects.get(id=id).delete()
+
+
+# k================================================
+
+
+class All_Member_View(View):
+    def get(elf, request,*args,**kwargs):
+        data=User.objects.filter(is_superuser=False)
+        return render(request,'all_members.html',{'data':data})

@@ -57,20 +57,8 @@ class UserProfile_Model(models.Model):
 
     def __str__(self):
         return self.name
-
-
-    # def create_profile(sender,instance,created,**kwargs):
-    #     if created:      
-    #         UserProfile_Model.objects.update_or_create(user=instance)
-    # post_save.connect(sender=User,receiver=create_profile)
+    
 @receiver(post_save,sender=User)
 def create_profile(sender,instance,created,**kwargs):
         if created:      
             UserProfile_Model.objects.create(user=instance)
-    
-
-# def create_profile(sender, instance, created, **kwargs):
-#     if created:
-#         UserProfile_Model.objects.create(user=instance)
-
-# post_save.connect(create_profile, sender=User)

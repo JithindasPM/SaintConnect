@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings  
+from django.conf.urls.static import static 
 
 from app.views import Home_View
 from app.views import Registration_View
@@ -26,7 +28,8 @@ from app.views import House_Name_Add_View
 from app.views import House_Name_Update_View
 from app.views import House_Name_Delete_View
 from app.views import Update_UserProfile_View
-
+from app.views import Member_Details_View,Delete
+from app.views import All_Member_View
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -39,6 +42,10 @@ urlpatterns = [
     path('house_name_update/<int:pk>', House_Name_Update_View.as_view(),name='house_name_update'),
     path('house_name_delete/<int:pk>', House_Name_Delete_View.as_view(),name='house_name_delete'),
     path('profile/<int:pk>', Update_UserProfile_View.as_view(),name='profile'),
+    path('hai/<int:pk>', Member_Details_View.as_view(),name='hai'),
+    path('del/<int:pk>', Delete.as_view(),name='del'),
+    path('all_members/', All_Member_View.as_view(),name='all_members'),
 
 
-]
+
+]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)  

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +27,7 @@
             top: 0;
             left: 0;
             height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
             z-index: 1000;
             transition: transform var(--transition-speed);
         }
@@ -35,9 +36,11 @@
             .sidebar {
                 transform: translateX(-100%);
             }
+
             .sidebar.active {
                 transform: translateX(0);
             }
+
             .main-content {
                 margin-left: 0 !important;
             }
@@ -89,7 +92,7 @@
         .top-bar {
             background: white;
             padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
             margin-bottom: 2rem;
             border-radius: 0.75rem;
         }
@@ -98,9 +101,9 @@
             background: white;
             border-radius: 0.75rem;
             padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
             transition: transform var(--transition-speed);
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .stat-card:hover {
@@ -123,7 +126,7 @@
             background: white;
             border-radius: 0.75rem;
             padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
         }
 
         .profile-dropdown .dropdown-toggle {
@@ -141,9 +144,11 @@
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
+            background-size: cover;
+            background-position: center;
         }
 
-        .table > :not(caption) > * > * {
+        .table> :not(caption)>*>* {
             padding: 1rem 1rem;
         }
 
@@ -162,6 +167,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -169,7 +175,7 @@
             <h4 class="m-0" style="color: var(--primary-color)">SaintConnect</h4>
         </div>
         <div class="sidebar-menu">
-            <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="{% url 'home' %}" class="active"><i class="fas fa-home"></i> Home</a>
             <a href="{% url 'profile' data.id%}"><i class="fas fa-users"></i> Profile Update</a>
             <a href="#"><i class="fas fa-shopping-cart"></i> Products</a>
             <a href="#"><i class="fas fa-chart-bar"></i> Analytics</a>
@@ -189,15 +195,19 @@
                 <h4 class="m-0">Dashboard Overview</h4>
             </div>
             <div class="profile-dropdown dropdown">
-                <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-                    <img src="/api/placeholder/32/32" alt="Profile" class="profile-img">
-                    <span>John Doe</span>
+                <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
+                    data-bs-toggle="dropdown">
+                    <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile" class="profile-img"></div>
+                    <span>{{request.user}}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i>
+                            Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -208,8 +218,8 @@
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">Total Users</h6>
-                            <h3 class="m-0">1,847</h3>
+                            <h6 class="text-muted mb-2">Family Members</h6>
+                            <h3 class="m-0">{{obj}}</h3>
                         </div>
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
@@ -308,9 +318,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
         // Mobile menu toggle
-        document.querySelector('.hamburger-menu').addEventListener('click', function() {
+        document.querySelector('.hamburger-menu').addEventListener('click', function () {
             document.querySelector('.sidebar').classList.toggle('active');
         });
     </script>
 </body>
+
 </html>

@@ -75,30 +75,6 @@
             border-radius: 0.5rem;
         }
 
-        .stat-card {
-            background: white;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
         .table-container {
             background: white;
             border-radius: 0.5rem;
@@ -164,67 +140,12 @@
             </div>
         </div>
 
-        <!-- Stats Row -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Total Members</h6>
-                            <h3 class="m-0">{{data}}</h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Monthly Donations</h6>
-                            <h3 class="m-0">$45,250</h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="fas fa-hand-holding-usd"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Active Events</h6>
-                            <h3 class="m-0">12</h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">New Messages</h6>
-                            <h3 class="m-0">28</h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Recent Activity Table -->
         <div class="table-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="m-0">Members</h5>
-                <a class="btn btn-primary btn-sm" href="{% url 'all_members' %}">View All</a>
+                <h5 class="m-0">All Members</h5>
+                <button class="btn btn-primary btn-sm">View All</button>
             </div>
             <table class="table">
                 <thead>
@@ -236,10 +157,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for i in house %}
+                    {% for i in data %}
                     <tr>
-                        <td>{{i.name}}</td>
-                        <td>{{i.id}}</td>
+                        <td>{{i.username}}</td>
+                        <td>hai</td>
                         <td>2024-01-30</td>
                          <td><a class="btn btn-primary" href="{% url 'hai' i.id %}"><i class="bi bi-eye"></i></a></td>
                     </tr>
