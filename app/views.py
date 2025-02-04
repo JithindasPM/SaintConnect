@@ -5,11 +5,13 @@ from django.contrib.auth import authenticate,login,logout
 from app.models import User
 from app.models import House_Name
 from app.models import UserProfile_Model
+from app.models import Death_Record
 
 from app.forms import Registration_Form
 from app.forms import Login_Form
 from app.forms import House_Name_Form
 from app.forms import UserProfile_Form
+from app.forms import Death_Record_Form
 
 
 # Create your views here.
@@ -160,7 +162,10 @@ class Certificate_View(View):
         data=UserProfile_Model.objects.get(user_id=request.user)
         return render(request,'certificates.html',{'data':data})
 
-# class Death_Certificate_Add_View(View):
-#     def get(self, request,*args,**kwargs):
+class Death_Certificate_Add_View(View):
+    def get(self, request,*args,**kwargs):
+        form=Death_Record_Form()
+        return render(request,'death_form.html',{'form':form})
+    
 
 

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Death Certificate Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 1rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .form-title {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="header">
+                <h2 class="form-title">Death Certificate Request Form</h2>
+                <p class="text-muted">Please fill in all the required information</p>
+            </div>
+
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Member</label>
+                        {{ form.member }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Date of Death</label>
+                        {{ form.date_of_death }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Place of Death</label>
+                        {{ form.place_of_death }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Funeral Date</label>
+                        {{ form.funeral_date }}
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Funeral Location</label>
+                        {{ form.funeral_location }}
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Burial Place</label>
+                        {{ form.burial_place }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Next of Kin</label>
+                        {{ form.next_of_kin }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contact Number</label>
+                        {{ form.contact_number }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary submit-btn">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

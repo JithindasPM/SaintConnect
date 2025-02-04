@@ -32,6 +32,7 @@ from app.views import Member_Details_View,Delete
 from app.views import All_Member_View
 from app.views import Logout_View
 from app.views import Certificate_View
+from app.views import Death_Certificate_Add_View
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -49,6 +50,8 @@ urlpatterns = [
     path('all_members/', All_Member_View.as_view(),name='all_members'),
     path('logout/', Logout_View.as_view(),name='logout'),
     path('certificate/', Certificate_View.as_view(),name='certificate'),
+    path('death_certificate/', Death_Certificate_Add_View.as_view(),name='death_certificate'),
+
 
 
 

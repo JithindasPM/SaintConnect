@@ -110,6 +110,9 @@
         .stat-card:hover {
             transform: translateY(-5px);
         }
+        .start-card-a{
+            text-decoration: none;
+        }
 
         .stat-icon {
             width: 48px;
@@ -198,16 +201,19 @@
             <div class="profile-dropdown dropdown">
                 <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
                     data-bs-toggle="dropdown">
-                    <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile" class="profile-img"></div>
+                    <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile"
+                        class="profile-img"></div>
                     <span>{{request.user}}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{% url 'profile' data.id%}"><i class="fas fa-user me-2"></i> Profile</a></li>
+                    <li><a class="dropdown-item" href="{% url 'profile' data.id%}"><i class="fas fa-user me-2"></i>
+                            Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>
+                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                                class="fas fa-sign-out-alt me-2"></i>
                             Logout</a></li>
                 </ul>
             </div>
@@ -242,17 +248,19 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Death</h6>
-                            <h3 class="m-0"></h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="bi bi-ban"></i>
+                <a class="start-card-a" href="{% url 'death_certificate' %}">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Death</h6>
+                                <h3 class="m-0"></h3>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="bi bi-ban"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
                 <div class="stat-card">

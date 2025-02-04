@@ -3,6 +3,7 @@ from django import forms
 from app.models import User
 from app.models import UserProfile_Model
 from app.models import House_Name
+from app.models import Death_Record
 
 
 class House_Name_Form(forms.ModelForm):
@@ -69,3 +70,24 @@ class Login_Form(forms.Form):
     password=forms.CharField(max_length=100,widget=forms.TextInput(attrs={'class':'form-control my-1',
                                                                            'placeholder':'Password . . .',
                                                                            'style':'background-color:rgba(255, 255, 255, 0.7)'}))
+
+class Death_Record_Form(forms.ModelForm):
+    class Meta:
+        model=Death_Record
+        fields=['member','date_of_death','place_of_death','funeral_date','funeral_location','burial_place','next_of_kin','contact_number']
+        read_only_fields=['created_at','updated_at','is_approved']
+
+        widgets = {
+            'member': forms.Select(attrs={'class': 'form-control my-1'}),
+            'date_of_death': forms.DateInput(attrs={'class': 'form-control my-1', 'type': 'date'}),
+            'funeral_date': forms.DateInput(attrs={'class': 'form-control my-1', 'type': 'date'}),
+            'place_of_death': forms.TextInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter place of death . . .'}),
+            'funeral_location': forms.TextInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter funeral location . . .'}),
+            'burial_place': forms.TextInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter burial place . . .'}),
+            'next_of_kin': forms.TextInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter next of kin . . .'}),
+            'contact_number': forms.NumberInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter contact number . . .'}),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filter out superusers from the 'member' dropdown
+        self.fields['member'].queryset = User.objects.filter(is_superuser=False)
