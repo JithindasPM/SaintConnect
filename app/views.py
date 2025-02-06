@@ -166,6 +166,9 @@ class Death_Certificate_Add_View(View):
     def get(self, request,*args,**kwargs):
         form=Death_Record_Form()
         return render(request,'death_form.html',{'form':form})
+    def post(self,request,*args,**kwargs):
+        form=Death_Record_Form(request.POST)
+        
     
 
 
