@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>User Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -175,7 +175,7 @@
             <h4 class="m-0" style="color: var(--primary-color)">SaintConnect</h4>
         </div>
         <div class="sidebar-menu">
-            <a href="{% url 'home' %}" class="active"><i class="fas fa-home"></i> Home</a>
+            <a href="{% url 'user' %}" class="active"><i class="fas fa-home"></i> Home</a>
             <a href=""><i class="fas fa-users"></i> Profile Update</a>
             <a href="#"><i class="fas fa-shopping-cart"></i> Products</a>
             <a href="#"><i class="fas fa-chart-bar"></i> Analytics</a>
@@ -197,16 +197,25 @@
             <div class="profile-dropdown dropdown">
                 <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
                     data-bs-toggle="dropdown">
-                    <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile" class="profile-img"></div>
+                    {% if data.profile_picture %}
+                    <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile"
+                        class="profile-img"></div>
                     <span>{{request.user}}</span>
+                    {% else %}
+                    <div style="border: 1px solid black;" alt="Profile"
+                        class="profile-img"></div>
+                    <span>{{request.user}}</span>
+                    {% endif %}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{% url 'profile' data.id%}"><i class="fas fa-user me-2"></i> Profile</a></li>
+                    <li><a class="dropdown-item" href="{% url 'profile' data.id%}"><i class="fas fa-user me-2"></i>
+                            Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>
+                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                                class="fas fa-sign-out-alt me-2"></i>
                             Logout</a></li>
                 </ul>
             </div>
@@ -278,36 +287,14 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Activity</th>
-                            <th>User</th>
+                            <th>Member</th>
                             <th>Date</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>New Order #1234</td>
-                            <td>John Smith</td>
-                            <td>2024-01-31</td>
-                            <td><span class="badge bg-success">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>Payment Received</td>
-                            <td>Sarah Johnson</td>
-                            <td>2024-01-31</td>
-                            <td><span class="badge bg-success">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>Support Ticket #5678</td>
-                            <td>Michael Brown</td>
-                            <td>2024-01-30</td>
-                            <td><span class="badge bg-warning">Pending</span></td>
-                        </tr>
-                        <tr>
-                            <td>New User Registration</td>
-                            <td>Emily Davis</td>
-                            <td>2024-01-30</td>
-                            <td><span class="badge bg-info">New</span></td>
+                            <td>up</td>
+                            <td>de</td>
                         </tr>
                     </tbody>
                 </table>

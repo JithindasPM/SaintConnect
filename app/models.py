@@ -12,7 +12,6 @@ class House_Name(models.Model):
     def __str__(self):
          return self.name
 
-
 class UserProfile_Model(models.Model):
 
     GENDER_CHOICES = [
@@ -63,9 +62,26 @@ def create_profile(sender,instance,created,**kwargs):
         if created:      
             UserProfile_Model.objects.create(user=instance)
 
-class Death_Record(models.Model):
+# class Death_Record(models.Model):
 
-    member = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+#     member = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+#     date_of_death = models.DateField()
+#     place_of_death = models.CharField(max_length=255)
+#     funeral_date = models.DateField(blank=True, null=True)
+#     funeral_location = models.CharField(max_length=255, blank=True, null=True)
+#     burial_place = models.CharField(max_length=255, blank=True, null=True)
+#     next_of_kin = models.CharField(max_length=255, blank=True, null=True)
+#     contact_number = models.CharField(max_length=15, blank=True, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     is_approved=models.BooleanField(default=False)
+
+#     def __str__(self):
+#         return f"{self.member}"
+
+class Death_Record(models.Model):
+    member = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="death_records")
+    applied_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="applied_death_records", null=True, blank=True,)  # User who submitted the record
     date_of_death = models.DateField()
     place_of_death = models.CharField(max_length=255)
     funeral_date = models.DateField(blank=True, null=True)
@@ -75,10 +91,10 @@ class Death_Record(models.Model):
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_approved=models.BooleanField(default=False)
-    # user=models.ForeignKey(User,on_delete=models.CASCADE, blank=True, null=True)
+    is_approved = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.member}"
+        return f"{self.member} - Applied by {self.applied_by}"
+
     
     

@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.generic import View
 from django.contrib.auth import authenticate,login,logout
+from datetime import date
 
 from app.models import User
 from app.models import House_Name
@@ -94,8 +95,6 @@ class User_View(View):
         obj=UserProfile_Model.objects.filter(house_name_id=data.house_name_id).count()
         return render(request,'user.html',{'data':data,'obj':obj})
 
-from app.forms import House_Name_Form
-
 class House_Name_Add_View(View):
     def get(self,request,*args,**kwargs):
         form=House_Name_Form()
@@ -160,15 +159,65 @@ class All_Member_View(View):
 class Certificate_View(View):
     def get(self, request,*args,**kwargs):
         data=UserProfile_Model.objects.get(user_id=request.user)
-        return render(request,'certificates.html',{'data':data})
+        id=request.user.id
+        death=Death_Record.objects.filter(applied_by_id=id)
+        return render(request,'certificates.html',{'data':data,'death':death})
 
 class Death_Certificate_Add_View(View):
     def get(self, request,*args,**kwargs):
-        form=Death_Record_Form()
+        form=Death_Record_Form(user=request.user)
         return render(request,'death_form.html',{'form':form})
-    def post(self,request,*args,**kwargs):
-        form=Death_Record_Form(request.POST)
-        
+    def post(self, request, *args, **kwargs):
+        form = Death_Record_Form(request.POST, user=request.user)  # Pass request.user
+        if form.is_valid():
+            death_record = form.save(commit=False)
+            death_record.applied_by = request.user  # Save the applicant
+            death_record.save()
+            return redirect('certificate')  # Redirect to success page
+        return render(request,'death_form.html',{'form':form})
     
+class Death_Certificate_Update_View(View):
+    def get(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        data=Death_Record.objects.get(id=id)
+        form=Death_Record_Form(instance=data)
+        return render(request,'death_form.html',{'form':form})
+    def post(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        data=Death_Record.objects.get(id=id)
+        form=Death_Record_Form(request.POST,instance=data)
+        if form.is_valid():
+            form.save()
+            return redirect('certificate')
+        else:
+            return render(request,'death_form.html',{'form':form})
+        
+class Death_Certificate_Delete_View(View):
+    def get(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        Death_Record.objects.get(id=id).delete()
+        return redirect('certificate')
+    
+class Admin_Approval_View(View):
+    def get(self, request,*args,**kwargs):
+        death=Death_Record.objects.all().order_by('-id')
+        return render(request,'admin_approval.html',{'death':death})
 
+
+class Death_Approval_View(View):
+    def post(self, request, record_id, *args, **kwargs):
+        death= Death_Record.objects.get(id=record_id)
+        death.is_approved = not death.is_approved  # Toggle between True/False
+        death.save()
+        return redirect('admin_approval')
+
+class Death_Certificate_View(View):
+    def get(self, request, record_id, *args, **kwargs):
+        death= Death_Record.objects.get(id=record_id)
+        data=death.member
+        person=UserProfile_Model.objects.get(user=data)
+        age=person.age
+        today = date.today()
+        formatted_date = today.strftime("%d-%m-%Y")
+        return render(request,'death_certificate.html',{'death':death,'formatted_date':formatted_date,'age':age})
 

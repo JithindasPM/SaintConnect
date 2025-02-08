@@ -33,6 +33,12 @@ from app.views import All_Member_View
 from app.views import Logout_View
 from app.views import Certificate_View
 from app.views import Death_Certificate_Add_View
+from app.views import Death_Certificate_Update_View
+from app.views import Death_Certificate_Delete_View
+from app.views import Admin_Approval_View
+from app.views import Death_Approval_View
+from app.views import Death_Certificate_View
+
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -50,10 +56,12 @@ urlpatterns = [
     path('all_members/', All_Member_View.as_view(),name='all_members'),
     path('logout/', Logout_View.as_view(),name='logout'),
     path('certificate/', Certificate_View.as_view(),name='certificate'),
-    path('death_certificate/', Death_Certificate_Add_View.as_view(),name='death_certificate'),
-
-
-
+    path('death_certificate_add/', Death_Certificate_Add_View.as_view(),name='death_certificate_add'),
+    path('death_update/<int:pk>', Death_Certificate_Update_View.as_view(),name='death_update'),
+    path('death_delete/<int:pk>', Death_Certificate_Delete_View.as_view(),name='death_delete'),
+    path('admin_approval/', Admin_Approval_View.as_view(),name='admin_approval'),
+    path('death_approval/<int:record_id>', Death_Approval_View.as_view(),name='death_approval'),
+    path('death_certificate/<int:record_id>', Death_Certificate_View.as_view(),name='death_certificate'),
 
 
 
