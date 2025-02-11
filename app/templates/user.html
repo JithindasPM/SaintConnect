@@ -159,6 +159,9 @@
             font-size: 1.5rem;
             color: #4b5563;
         }
+        .sidebar-a{
+            text-decoration: none;
+        }
 
         @media (max-width: 768px) {
             .hamburger-menu {
@@ -172,7 +175,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-logo">
-            <h4 class="m-0" style="color: var(--primary-color)">SaintConnect</h4>
+            <a class="sidebar-a" href="{% url 'home' %}"><h4 class="m-0" style="color: var(--primary-color)">SaintConnect</h4></a>
         </div>
         <div class="sidebar-menu">
             <a href="{% url 'user' %}" class="active"><i class="fas fa-home"></i> Home</a>

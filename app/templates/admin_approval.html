@@ -163,6 +163,7 @@
                 <h5 class="m-0">Death Certificates</h5>
                 <a class="btn btn-primary btn-sm" href="{% url 'all_members' %}">View All</a>
             </div>
+            {% if death %}
             <table class="table">
                 <thead>
                     <tr>
@@ -183,7 +184,7 @@
                             <form action="{% url 'death_approval' i.id %}" method="post">
                                 {% csrf_token %}
                                 <button class="btn btn-primary" type="submit">
-                                    {% if record.is_approved %} Revoke Approval {% else %} Update {% endif %}
+                                    {% if i.is_approved %} Cancel {% else %} Approve {% endif %}
                                 </button>
                             </form>
                         </td>
@@ -198,6 +199,60 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <div>
+                <p>Nill</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- baptism Table -->
+        <div class="table-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="m-0">Baptism Certificates</h5>
+                <a class="btn btn-primary btn-sm" href="{% url 'all_members' %}">View All</a>
+            </div>
+            {% if baptism %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Date of Baptism</th>
+                        <th>Requester</th>
+                        <th>Update</th>
+                        <th>Approved</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in baptism %}
+                    <tr>
+                        <td>{{i.member}}</td>
+                        <td>{{i.date_of_baptism}}</td>
+                        <td>{{i.applied_by}}</td>
+                        <td>
+                            <form action="{% url 'baptism_approval' i.id %}" method="post">
+                                {% csrf_token %}
+                                <button class="btn btn-primary" type="submit">
+                                    {% if i.is_approved %} Cancel {% else %} Approve {% endif %}
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            {% if i.is_approved %}
+                            <a href=""><i class="bi bi-download"></i></a>
+                            {% else %}
+                            <p>Not Approved</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div>
+                <p>Nill</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 

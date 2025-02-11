@@ -38,6 +38,11 @@ from app.views import Death_Certificate_Delete_View
 from app.views import Admin_Approval_View
 from app.views import Death_Approval_View
 from app.views import Death_Certificate_View
+from app.views import Baptism_Certificate_Add_View
+from app.views import Baptism_Certificate_Update_View
+from app.views import Baptism_Certificate_Delete_View
+from app.views import Baptism_Approval_View
+from app.views import Baptism_Certificate_View
 
 
 urlpatterns = [
@@ -62,6 +67,11 @@ urlpatterns = [
     path('admin_approval/', Admin_Approval_View.as_view(),name='admin_approval'),
     path('death_approval/<int:record_id>', Death_Approval_View.as_view(),name='death_approval'),
     path('death_certificate/<int:record_id>', Death_Certificate_View.as_view(),name='death_certificate'),
+    path('baptism_certificate_add/', Baptism_Certificate_Add_View.as_view(),name='baptism_certificate_add'),
+    path('baptism_update/<int:pk>', Baptism_Certificate_Update_View.as_view(),name='baptism_update'),
+    path('baptism_delete/<int:pk>', Baptism_Certificate_Delete_View.as_view(),name='baptism_delete'),
+    path('baptism_approval/<int:record_id>', Baptism_Approval_View.as_view(),name='baptism_approval'),
+    path('baptism_certificate/<int:record_id>', Baptism_Certificate_View.as_view(),name='baptism_certificate'),
 
 
 

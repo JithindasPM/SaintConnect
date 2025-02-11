@@ -7,12 +7,14 @@ from app.models import User
 from app.models import House_Name
 from app.models import UserProfile_Model
 from app.models import Death_Record
+from app.models import Baptism_Record
 
 from app.forms import Registration_Form
 from app.forms import Login_Form
 from app.forms import House_Name_Form
 from app.forms import UserProfile_Form
 from app.forms import Death_Record_Form
+from app.forms import Baptism_Record_Form
 
 
 # Create your views here.
@@ -161,7 +163,8 @@ class Certificate_View(View):
         data=UserProfile_Model.objects.get(user_id=request.user)
         id=request.user.id
         death=Death_Record.objects.filter(applied_by_id=id)
-        return render(request,'certificates.html',{'data':data,'death':death})
+        baptism=Baptism_Record.objects.filter(applied_by_id=id)
+        return render(request,'certificates.html',{'data':data,'death':death,'baptism':baptism})
 
 class Death_Certificate_Add_View(View):
     def get(self, request,*args,**kwargs):
@@ -180,12 +183,12 @@ class Death_Certificate_Update_View(View):
     def get(self, request,*args,**kwargs):
         id=kwargs.get('pk')
         data=Death_Record.objects.get(id=id)
-        form=Death_Record_Form(instance=data)
+        form=Death_Record_Form(instance=data,user=request.user)
         return render(request,'death_form.html',{'form':form})
     def post(self, request,*args,**kwargs):
         id=kwargs.get('pk')
         data=Death_Record.objects.get(id=id)
-        form=Death_Record_Form(request.POST,instance=data)
+        form=Death_Record_Form(request.POST,instance=data,user=request.user)
         if form.is_valid():
             form.save()
             return redirect('certificate')
@@ -201,8 +204,8 @@ class Death_Certificate_Delete_View(View):
 class Admin_Approval_View(View):
     def get(self, request,*args,**kwargs):
         death=Death_Record.objects.all().order_by('-id')
-        return render(request,'admin_approval.html',{'death':death})
-
+        baptism=Baptism_Record.objects.all().order_by('-id')
+        return render(request,'admin_approval.html',{'death':death,'baptism':baptism})
 
 class Death_Approval_View(View):
     def post(self, request, record_id, *args, **kwargs):
@@ -220,4 +223,55 @@ class Death_Certificate_View(View):
         today = date.today()
         formatted_date = today.strftime("%d-%m-%Y")
         return render(request,'death_certificate.html',{'death':death,'formatted_date':formatted_date,'age':age})
+    
+class Baptism_Certificate_Add_View(View):
+    def get(self, request,*args,**kwargs):
+        form=Baptism_Record_Form(user=request.user)
+        return render(request,'baptism_form.html',{'form':form})
+    def post(self, request, *args, **kwargs):
+        form = Baptism_Record_Form(request.POST, user=request.user)
+        if form.is_valid():
+            baptism_record = form.save(commit=False)
+            baptism_record.applied_by = request.user
+            baptism_record.save()
+            return redirect('certificate')
+        return render(request,'baptism_form.html',{'form':form})
 
+class Baptism_Certificate_Update_View(View):
+    def get(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        data=Baptism_Record.objects.get(id=id)
+        form=Baptism_Record_Form(instance=data,user=request.user)
+        return render(request,'baptism_form.html',{'form':form})
+    def post(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        data=Baptism_Record.objects.get(id=id)
+        form=Baptism_Record_Form(request.POST,instance=data,user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('certificate')
+        else:
+            return render(request,'baptism_form.html',{'form':form})
+        
+class Baptism_Certificate_Delete_View(View):
+    def get(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        Baptism_Record.objects.get(id=id).delete()
+        return redirect('certificate')
+    
+class Baptism_Approval_View(View):
+    def post(self, request, record_id, *args, **kwargs):
+        baptism= Baptism_Record.objects.get(id=record_id)
+        baptism.is_approved = not baptism.is_approved  # Toggle between True/False
+        baptism.save()
+        return redirect('admin_approval')
+    
+class Baptism_Certificate_View(View):
+    def get(self, request, record_id, *args, **kwargs):
+        baptism= Baptism_Record.objects.get(id=record_id)
+        data=baptism.member
+        person=UserProfile_Model.objects.get(user=data)
+        dob=person.date_of_birth
+        today = date.today()
+        formatted_date = today.strftime("%d-%m-%Y")
+        return render(request,'baptism_certificate.html',{'baptism':baptism,'formatted_date':formatted_date,'dob':dob})
