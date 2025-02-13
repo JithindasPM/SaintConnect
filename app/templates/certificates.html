@@ -235,6 +235,7 @@
         <!-- Stats Row -->
         <div class="row g-4 mb-4">
             <div class="col-md-3">
+                <a class="start-card-a" href="{% url 'marriage_certificate_add' %}">
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -246,6 +247,7 @@
                         </div>
                     </div>
                 </div>
+            </a>
             </div>
             <div class="col-md-3">
                 <a class="start-card-a" href="{% url 'baptism_certificate_add' %}">
@@ -366,6 +368,52 @@
                             <td>
                                 {% if bap.is_approved %}
                                 <a href="{% url 'baptism_certificate' bap.id %}"><i class="bi bi-download"></i></a>
+                                {% else %}
+                                <p>Not Approved</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div>
+                <p>Nill</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Marriage record Table -->
+        <div class="table-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="m-0">Marriage Certificate</h5>
+                <!-- <button class="btn btn-primary btn-sm">View All</button> -->
+            </div>
+            {% if marriage %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Groom</th>
+                            <th>Bride</th>
+                            <th>Marriage Date</th>
+                            <th>Update</th>
+                            <th>Delete</th>
+                            <th>Download</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mar in marriage %}
+                        <tr>
+                            <td>{{mar.groom_name}}</td>
+                            <td>{{mar.bride_name}}</td>
+                            <td>{{mar.marriage_date}}</td>
+                            <td><a href="{% url 'marriage_update' mar.id %}"><i class="bi bi-gear"></i></a></td>
+                            <td><a href="{% url 'marriage_delete' mar.id %}"><i class="bi bi-trash3"></i></a></td>
+                            <td>
+                                {% if mar.is_approved %}
+                                <a href="{% url 'marriage_certificate' mar.id %}"><i class="bi bi-download"></i></a>
                                 {% else %}
                                 <p>Not Approved</p>
                                 {% endif %}

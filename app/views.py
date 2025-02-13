@@ -8,6 +8,8 @@ from app.models import House_Name
 from app.models import UserProfile_Model
 from app.models import Death_Record
 from app.models import Baptism_Record
+from app.models import Auditorium
+from app.models import Marriage_Record
 
 from app.forms import Registration_Form
 from app.forms import Login_Form
@@ -15,6 +17,8 @@ from app.forms import House_Name_Form
 from app.forms import UserProfile_Form
 from app.forms import Death_Record_Form
 from app.forms import Baptism_Record_Form
+from app.forms import Auditorium_Form
+from app.forms import Marriage_Record_Form
 
 
 # Create your views here.
@@ -22,10 +26,6 @@ from app.forms import Baptism_Record_Form
 class Home_View(View):
     def get(self,request):
         return render(request,'index.html')
-    
-# class Registration_View(View):
-#     def get(self,request):
-#         return render(request,'registration.html')
     
 class Registration_View(View):
     def get(self,request,*args,**kwargs):
@@ -47,21 +47,21 @@ class Update_UserProfile_View(View):
     def get(self, request, *args, **kwargs):
         id = kwargs.get('pk')
         data=UserProfile_Model.objects.get(id=id)
-        form = UserProfile_Form(instance=data)
+        form = UserProfile_Form(instance=data,user=request.user)
         return render(request, 'profile.html', {'form': form,'data':data})
     
     def post(self, request, *args, **kwargs):
         id = kwargs.get('pk')
         data=UserProfile_Model.objects.get(id=id)
-        form = UserProfile_Form(request.POST,request.FILES, instance=data)
+        form = UserProfile_Form(request.POST,request.FILES, instance=data,user=request.user)
         if form.is_valid():
             form.save()
-            # UserProfile_Model.objects.create(**form.cleaned_data,user=request.user,total_calories=total_calorie)
+            if request.user.is_superuser:
+                return redirect('admin')  # Redirect to 'admin' if superuser
+            else:
+                return redirect('user')  # Redirect to 'user' otherwise
 
-            return redirect('user')
-        else:
-            form = UserProfile_Form(instance=data)
-            return render(request, 'profile.html', {'form': form,'data':data})
+        return render(request, 'profile.html', {'form': form, 'data': data})
 
 class Login_View(View):
     def get(self,request):
@@ -87,9 +87,11 @@ class Logout_View(View):
     
 class Admin_View(View):
     def get(self,request):
-        data = User.objects.filter(is_superuser=False).count()
+        datas = User.objects.filter(is_superuser=False).count()
+        id=request.user.id
+        data=UserProfile_Model.objects.get(user_id=id)
         house=House_Name.objects.all()
-        return render(request,'admin.html',{'data':data,'house':house})
+        return render(request,'admin.html',{'datas':datas,'house':house,"data":data})
     
 class User_View(View):
     def get(self,request):
@@ -164,7 +166,8 @@ class Certificate_View(View):
         id=request.user.id
         death=Death_Record.objects.filter(applied_by_id=id)
         baptism=Baptism_Record.objects.filter(applied_by_id=id)
-        return render(request,'certificates.html',{'data':data,'death':death,'baptism':baptism})
+        marriage=Marriage_Record.objects.filter(user_id=id)
+        return render(request,'certificates.html',{'data':data,'death':death,'baptism':baptism,'marriage':marriage})
 
 class Death_Certificate_Add_View(View):
     def get(self, request,*args,**kwargs):
@@ -205,7 +208,8 @@ class Admin_Approval_View(View):
     def get(self, request,*args,**kwargs):
         death=Death_Record.objects.all().order_by('-id')
         baptism=Baptism_Record.objects.all().order_by('-id')
-        return render(request,'admin_approval.html',{'death':death,'baptism':baptism})
+        marriage=Marriage_Record.objects.all().order_by('-id')
+        return render(request,'admin_approval.html',{'death':death,'baptism':baptism,'marriage':marriage})
 
 class Death_Approval_View(View):
     def post(self, request, record_id, *args, **kwargs):
@@ -275,3 +279,93 @@ class Baptism_Certificate_View(View):
         today = date.today()
         formatted_date = today.strftime("%d-%m-%Y")
         return render(request,'baptism_certificate.html',{'baptism':baptism,'formatted_date':formatted_date,'dob':dob})
+
+class Auditorium_Add_View(View):
+    def get(self,request,*args,**kwargs):
+        form=Auditorium_Form()
+        data=Auditorium.objects.all()
+        return render(request,'auditorium.html',{'form':form,'data':data})
+    def post(self,request,*args,**kwargs):
+        form=Auditorium_Form(request.POST)
+        if form.is_valid():
+            form.save()
+            form=Auditorium_Form()
+            data=Auditorium.objects.all()
+            return render(request,'auditorium.html',{'form':form,'data':data})
+
+class Auditorium_Update_View(View):
+    def get(self,request,*args,**kwargs):
+        id=kwargs.get('pk')
+        obj=Auditorium.objects.get(id=id)
+        form=Auditorium_Form(instance=obj)
+        data=Auditorium.objects.all()
+        return render(request,'auditorium.html',{'form':form,'data':data})
+    def post(self,request,*args,**kwargs):
+        id=kwargs.get('pk')
+        obj=Auditorium.objects.get(id=id)
+        form=Auditorium_Form(request.POST,instance=obj)
+        if form.is_valid():
+            form.save()
+            form=Auditorium_Form()
+            data=Auditorium.objects.all()
+            return redirect('auditorium_add')
+        
+class Auditorium_Delete_View(View):
+    def get(self,request,*args,**kwargs):
+        id=kwargs.get('pk')
+        Auditorium.objects.get(id=id).delete()
+        return redirect('auditorium_add')
+        
+class Marriage_Certificate_Add_View(View):
+    def get(self, request, *args, **kwargs):
+        form = Marriage_Record_Form() 
+        return render(request, 'marriage_form.html', {'form': form})
+    def post(self, request, *args, **kwargs):
+        form = Marriage_Record_Form(request.POST) 
+        if form.is_valid():
+            marriage_record = form.save(commit=False)
+            marriage_record.user = request.user
+            marriage_record.save() 
+            form = Marriage_Record_Form() 
+        return redirect('certificate')
+    
+class Marriage_Certificate_Update_View(View):
+    def get(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        data=Marriage_Record.objects.get(id=id)
+        form=Marriage_Record_Form(instance=data)
+        return render(request,'marriage_form.html',{'form':form})
+    def post(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        data=Marriage_Record.objects.get(id=id)
+        form=Marriage_Record_Form(request.POST,instance=data)
+        if form.is_valid():
+            form.save()
+            return redirect('certificate')
+        else:
+            return render(request,'marriage_form.html',{'form':form})
+        
+class Marriage_Certificate_Delete_View(View):
+    def get(self, request,*args,**kwargs):
+        id=kwargs.get('pk')
+        Marriage_Record.objects.get(id=id).delete()
+        return redirect('certificate')
+    
+class Marriage_Approval_View(View):
+    def post(self, request, record_id, *args, **kwargs):
+        marriage= Marriage_Record.objects.get(id=record_id)
+        marriage.is_approved = not marriage.is_approved  # Toggle between True/False
+        marriage.save()
+        return redirect('admin_approval')
+    
+class Marriage_Certificate_View(View):
+    def get(self, request, record_id, *args, **kwargs):
+        marriage= Marriage_Record.objects.get(id=record_id)
+        today = date.today()
+        formatted_date = today.strftime("%d-%m-%Y")
+        return render(request,'marriage_certificate.html',{'marriage':marriage,'formatted_date':formatted_date})
+    
+class User_Filter_View(View):
+    def get(self,request, role,*args, **kwargs):
+        users = UserProfile_Model.objects.filter(role=role).exclude(user__is_superuser=True)
+        return render(request, 'user_filter.html', {'users': users, 'role': role})

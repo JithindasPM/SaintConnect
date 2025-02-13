@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaintConnect - Admin Certificates</title>
+    <title>SaintConnect - Admin All Members</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -108,9 +108,6 @@
         .sidebar-a {
             text-decoration: none;
         }
-        .table{
-            text-align: center;
-        }
     </style>
 </head>
 
@@ -163,150 +160,34 @@
             </div>
         </div>
 
-        <!-- Death Table -->
+        <!-- Recent Activity Table -->
         <div class="table-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="m-0">Death Certificates</h5>
+                <h5 class="m-0">{{role}}</h5>
+                <a class="btn btn-primary btn-sm" href="{% url 'all_members' %}">Back</a>
             </div>
-            {% if death %}
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Member</th>
-                        <th>Date of Death</th>
-                        <th>Requester</th>
-                        <th>Update</th>
-                        <th>Approved</th>
+                        <th>Name</th>
+                        <th>House name</th>
+                        <th>Phone</th>
+                        <!-- <th>Role</th> -->
                     </tr>
                 </thead>
                 <tbody>
-                    {% for i in death %}
+                    {% for i in users %}
                     <tr>
-                        <td>{{i.member}}</td>
-                        <td>{{i.date_of_death}}</td>
-                        <td>{{i.applied_by}}</td>
-                        <td>
-                            <form action="{% url 'death_approval' i.id %}" method="post">
-                                {% csrf_token %}
-                                <button class="btn btn-primary" type="submit">
-                                    {% if i.is_approved %} Cancel {% else %} Approve {% endif %}
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            {% if i.is_approved %}
-                            <a href=""><i class="bi bi-download"></i></a>
-                            {% else %}
-                            <p>Not Approved</p>
-                            {% endif %}
-                        </td>
+                        <td>{{i.name}}</td>
+                        <td>{{i.house_name}}</td>
+                        <td>{{i.phone_number}}</td>
+                        <!-- <td>{{i.userprofile_model.role}}</td> -->
                     </tr>
+                    {% empty %}
+                    <li>No users found</li>
                     {% endfor %}
                 </tbody>
             </table>
-            {% else %}
-            <div>
-                <p>Nill</p>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- baptism Table -->
-        <div class="table-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="m-0">Baptism Certificates</h5>
-            </div>
-            {% if baptism %}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Member</th>
-                        <th>Date of Baptism</th>
-                        <th>Requester</th>
-                        <th>Update</th>
-                        <th>Approved</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in baptism %}
-                    <tr>
-                        <td>{{i.member}}</td>
-                        <td>{{i.date_of_baptism}}</td>
-                        <td>{{i.applied_by}}</td>
-                        <td>
-                            <form action="{% url 'baptism_approval' i.id %}" method="post">
-                                {% csrf_token %}
-                                <button class="btn btn-primary" type="submit">
-                                    {% if i.is_approved %} Cancel {% else %} Approve {% endif %}
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            {% if i.is_approved %}
-                            <a href=""><i class="bi bi-download"></i></a>
-                            {% else %}
-                            <p>Not Approved</p>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div>
-                <p>Nill</p>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- marriage Table -->
-        <div class="table-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="m-0">Marriage Certificates</h5>
-            </div>
-            {% if marriage %}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Groom</th>
-                        <th>Bride</th>
-                        <th>Marriage Date</th>
-                        <th>Requester</th>
-                        <th>Update</th>
-                        <th>Approved</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in marriage %}
-                    <tr>
-                        <td>{{i.groom_name}}</td>
-                         <td>{{i.bride_name}}</td>
-                         <td>{{i.marriage_date}}</td>
-                        <td>{{i.user}}</td>
-                        <td>
-                            <form action="{% url 'marriage_approval' i.id %}" method="post">
-                                {% csrf_token %}
-                                <button class="btn btn-primary" type="submit">
-                                    {% if i.is_approved %} Cancel {% else %} Approve {% endif %}
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            {% if i.is_approved %}
-                            <a href=""><i class="bi bi-download"></i></a>
-                            {% else %}
-                            <p>Not Approved</p>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div>
-                <p>Nill</p>
-            </div>
-            {% endif %}
         </div>
     </div>
 

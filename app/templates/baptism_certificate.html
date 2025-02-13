@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,22 +14,27 @@
             padding: 20px;
             border: 2px solid black;
         }
+
         .header {
             text-align: center;
         }
+
         .content {
             margin-top: 20px;
         }
+
         .footer {
             margin-top: 50px;
             text-align: center;
         }
+
         .signature {
             margin-top: 40px;
             text-align: right;
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h2>St. George Orthodox Maha Edavaka</h2>
@@ -37,7 +43,9 @@
     </div>
     <div class="content mt-5">
         <p><strong>Issued Date : </strong>{{ formatted_date }}</p>
-        <p>This is to certify that <strong>{{ baptism.member }}</strong>, born on <strong>{% if dob %}{{ dob }}{% else %}Not Available{% endif %}</strong>, was baptized on <strong>{{ baptism.date_of_baptism }}</strong> at <strong>St. George Orthodox Maha Edavaka , Konni</strong>.</p>
+        <p>This is to certify that <strong>{{ baptism.member }}</strong>, born on <strong>{% if dob %}{{ dob }}{% else
+                %}Not Available{% endif %}</strong>, was baptized on <strong>{{ baptism.date_of_baptism }}</strong> at
+            <strong>St. George Orthodox Maha Edavaka , Konni</strong>.</p>
         <p>This certificate is issued upon request for official and record purposes.</p>
         <p><strong>Father:</strong> {{ baptism.father_name }} | <strong>Mother:</strong> {{ baptism.mother_name }}</p>
     </div>
@@ -50,4 +58,5 @@
         <p>(Church Seal & Stamp)</p>
     </div>
 </body>
+
 </html>

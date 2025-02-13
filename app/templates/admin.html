@@ -141,7 +141,7 @@
             <a href="{% url 'house_name' %}"><i class="fas fa-users"></i> House Names</a>
             <a href="#"><i class="fas fa-calendar"></i> Events</a>
             <a href="#"><i class="fas fa-hand-holding-usd"></i> Donations</a>
-            <a href="#"><i class="fas fa-chart-bar"></i> Reports</a>
+            <a href="{% url 'auditorium_add' %}"><i class="fas fa-chart-bar"></i> Auditorium</a>
             <a href="{% url 'admin_approval' %}"><i class="fas fa-envelope"></i> Certificates</a>
             <a href="#"><i class="fas fa-cog"></i> Settings</a>
         </div>
@@ -153,12 +153,20 @@
         <div class="top-bar d-flex justify-content-between align-items-center">
             <h4 class="m-0">Dashboard</h4>
             <div class="profile-dropdown dropdown">
-                <button class="btn dropdown-toggle d-flex align-items-center gap-2 profile-button" type="button" data-bs-toggle="dropdown">
-                    <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile" class="profile-img"></div>
-                    <span>{{request.user}}</span>
-                </button>
+                    <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
+                        data-bs-toggle="dropdown">
+                        {% if data.profile_picture %}
+                        <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile"
+                            class="profile-img"></div>
+                        <span>{{request.user}}</span>
+                        {% else %}
+                        <div style="border: 1px solid black;" alt="Profile"
+                            class="profile-img"></div>
+                        <span>{{request.user}}</span>
+                        {% endif %}
+                    </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
+                    <li><a class="dropdown-item" href="{% url 'profile' data.id%}"><i class="fas fa-user me-2"></i> Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
@@ -173,7 +181,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-2">Total Members</h6>
-                            <h3 class="m-0">{{data}}</h3>
+                            <h3 class="m-0">{{datas}}</h3>
                         </div>
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
@@ -243,7 +251,7 @@
                         <td>{{i.name}}</td>
                         <td>{{i.id}}</td>
                         <td>2024-01-30</td>
-                         <td><a class="btn btn-primary" href="{% url 'hai' i.id %}"><i class="bi bi-eye"></i></a></td>
+                         <td><a class="btn btn-primary" href="{% url 'member_detail' i.id %}"><i class="bi bi-eye"></i></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

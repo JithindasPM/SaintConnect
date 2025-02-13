@@ -93,6 +93,42 @@ class Baptism_Record(models.Model):
 
     def __str__(self):
         return f"{self.member} - Applied by {self.applied_by}"
+    
+class Auditorium(models.Model):
+    name=models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
     
-    
+
+class Marriage_Record(models.Model):
+    groom_name = models.CharField(max_length=100, blank=True)
+    groom_family_name = models.CharField(max_length=100, blank=True)
+    groom_address = models.CharField(max_length=255, blank=True)
+    groom_phone_number = models.CharField(max_length=15, blank=True)
+    groom_church_name = models.CharField(max_length=100, blank=True)
+    groom_father_name = models.CharField(max_length=100, blank=True)
+    groom_mother_name = models.CharField(max_length=100, blank=True)
+    groom_date_of_birth = models.DateField(null=True, blank=True)
+
+    bride_name = models.CharField(max_length=100, blank=True)
+    bride_family_name = models.CharField(max_length=100, blank=True)
+    bride_address = models.CharField(max_length=255, blank=True)
+    bride_phone_number = models.CharField(max_length=15, blank=True)
+    bride_church_name = models.CharField(max_length=100, blank=True)
+    bride_father_name = models.CharField(max_length=100, blank=True)
+    bride_mother_name = models.CharField(max_length=100, blank=True)
+    bride_date_of_birth = models.DateField(null=True, blank=True)
+
+    marriage_date = models.DateField(null=True, blank=True)
+    held_at = models.ForeignKey(Auditorium, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True, blank=True)
+    is_approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.groom_name} & {self.bride_name} - {self.marriage_date}"
+
+
+   

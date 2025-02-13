@@ -43,6 +43,15 @@ from app.views import Baptism_Certificate_Update_View
 from app.views import Baptism_Certificate_Delete_View
 from app.views import Baptism_Approval_View
 from app.views import Baptism_Certificate_View
+from app.views import Auditorium_Add_View
+from app.views import Auditorium_Update_View
+from app.views import Auditorium_Delete_View
+from app.views import Marriage_Certificate_Add_View
+from app.views import Marriage_Certificate_Update_View
+from app.views import Marriage_Certificate_Delete_View
+from app.views import Marriage_Approval_View
+from app.views import Marriage_Certificate_View
+from app.views import User_Filter_View
 
 
 urlpatterns = [
@@ -56,7 +65,7 @@ urlpatterns = [
     path('house_name_update/<int:pk>', House_Name_Update_View.as_view(),name='house_name_update'),
     path('house_name_delete/<int:pk>', House_Name_Delete_View.as_view(),name='house_name_delete'),
     path('profile/<int:pk>', Update_UserProfile_View.as_view(),name='profile'),
-    path('hai/<int:pk>', Member_Details_View.as_view(),name='hai'),
+    path('member_detail/<int:pk>', Member_Details_View.as_view(),name='member_detail'),
     path('del/<int:pk>', Delete.as_view(),name='del'),
     path('all_members/', All_Member_View.as_view(),name='all_members'),
     path('logout/', Logout_View.as_view(),name='logout'),
@@ -72,7 +81,15 @@ urlpatterns = [
     path('baptism_delete/<int:pk>', Baptism_Certificate_Delete_View.as_view(),name='baptism_delete'),
     path('baptism_approval/<int:record_id>', Baptism_Approval_View.as_view(),name='baptism_approval'),
     path('baptism_certificate/<int:record_id>', Baptism_Certificate_View.as_view(),name='baptism_certificate'),
-
+    path('auditorium_add/', Auditorium_Add_View.as_view(),name='auditorium_add'),
+    path('auditorium_update/<int:pk>', Auditorium_Update_View.as_view(),name='auditorium_update'),
+    path('auditorium_delete/<int:pk>', Auditorium_Delete_View.as_view(),name='auditorium_delete'),
+    path('marriage_certificate_add/', Marriage_Certificate_Add_View.as_view(),name='marriage_certificate_add'),
+    path('marriage_update/<int:pk>', Marriage_Certificate_Update_View.as_view(),name='marriage_update'),
+    path('marriage_delete/<int:pk>', Marriage_Certificate_Delete_View.as_view(),name='marriage_delete'),
+    path('marriage_approval/<int:record_id>', Marriage_Approval_View.as_view(),name='marriage_approval'),
+    path('marriage_certificate/<int:record_id>', Marriage_Certificate_View.as_view(),name='marriage_certificate'),
+    path('user_filter/<str:role>', User_Filter_View.as_view(),name='user_filter'),
 
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)  

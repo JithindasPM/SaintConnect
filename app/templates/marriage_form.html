@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marriage Certificate Form</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            min-height: 100vh;
+            padding: 40px 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .page-title {
+            font-size: 2.5rem;
+            color: #2d3748;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .page-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, #4e73df, #224abe);
+            border-radius: 2px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: none;
+        }
+        .card-header h4 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .bg-primary {
+            background: linear-gradient(45deg, #4e73df 0%, #224abe 100%) !important;
+        }
+        .bg-danger {
+            background: linear-gradient(45deg, #e83e8c 0%, #ba2c6d 100%) !important;
+        }
+        .bg-success {
+            background: linear-gradient(45deg, #1cc88a 0%, #13855c 100%) !important;
+        }
+        .card-body {
+            padding: 2rem;
+            background: white;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .mb-3 {
+            margin-bottom: 1.5rem !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        select {
+            height: 45px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="tel"]:focus,
+        select:focus {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+            outline: none;
+        }
+        .btn-primary {
+            padding: 0.8rem 3rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #4e73df 0%, #224abe 100%);
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(78, 115, 223, 0.4);
+            background: linear-gradient(45deg, #224abe 0%, #4e73df 100%);
+        }
+        .marriage-details .row {
+            justify-content: center;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Marriage Certificate Application</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <!-- Groom Details -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0 text-center">Groom Details</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                {{ form.groom_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Family Name</label>
+                                {{ form.groom_family_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                {{ form.groom_address }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                {{ form.groom_phone_number }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Church Name</label>
+                                {{ form.groom_church_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Father's Name</label>
+                                {{ form.groom_father_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mother's Name</label>
+                                {{ form.groom_mother_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Date of Birth</label>
+                                {{ form.groom_date_of_birth }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bride Details -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-danger text-white">
+                            <h4 class="mb-0 text-center">Bride Details</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                {{ form.bride_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Family Name</label>
+                                {{ form.bride_family_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                {{ form.bride_address }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                {{ form.bride_phone_number }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Church Name</label>
+                                {{ form.bride_church_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Father's Name</label>
+                                {{ form.bride_father_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mother's Name</label>
+                                {{ form.bride_mother_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Date of Birth</label>
+                                {{ form.bride_date_of_birth }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marriage Details -->
+                <div class="col-12">
+                    <div class="card marriage-details">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="mb-0 text-center">Marriage Details</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Marriage Date</label>
+                                        {{ form.marriage_date }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Venue</label>
+                                        {{ form.held_at }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 text-center mt-4 mb-5">
+                    <button type="submit" class="btn btn-primary">Submit Application</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

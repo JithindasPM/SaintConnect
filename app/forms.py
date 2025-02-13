@@ -6,6 +6,8 @@ from app.models import House_Name
 from app.models import Death_Record
 from django.contrib.auth import get_user_model
 from app.models import Baptism_Record
+from app.models import Auditorium
+from app.models import Marriage_Record
 
 
 class House_Name_Form(forms.ModelForm):
@@ -65,6 +67,14 @@ class UserProfile_Form(forms.ModelForm):
                                                     'type': 'date',
                                                     'style': 'background-color:rgba(255, 255, 255, 0.75);border:2px solid rgba(0, 0, 0, 0.1)'})
         } 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Get the logged-in user
+        super(UserProfile_Form, self).__init__(*args, **kwargs)
+    
+        if user and user.is_superuser:
+            self.fields['house_name'].queryset = House_Name.objects.filter(name='admin')  # Superuser sees only 'admin'
+        else:
+            self.fields['house_name'].queryset = House_Name.objects.exclude(name='admin')  # Regular users see all except 'admin'
 
 
 class Login_Form(forms.Form):
@@ -141,3 +151,40 @@ class Baptism_Record_Form(forms.ModelForm):
                 ).exclude(id=user.id)
             except UserProfile_Model.DoesNotExist:
                 pass
+
+class Auditorium_Form(forms.ModelForm):
+    class Meta:
+        model=Auditorium
+        fields=['name']
+
+        widgets={
+            'name':forms.TextInput(attrs={'class':'form-control',
+                                              'placeholder': 'Auditorium Name . . .'})
+        }
+
+class Marriage_Record_Form(forms.ModelForm):
+    class Meta:
+        model = Marriage_Record
+        exclude = ['user', 'created_at', 'updated_at', 'is_approved']
+        widgets = {
+            'groom_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'groom_family_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'groom_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'groom_phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'groom_church_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'groom_father_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'groom_mother_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'groom_date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+
+            'bride_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'bride_family_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'bride_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'bride_phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'bride_church_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'bride_father_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'bride_mother_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'bride_date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+
+            'marriage_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'held_at': forms.Select(attrs={'class': 'form-control'}),
+        }
