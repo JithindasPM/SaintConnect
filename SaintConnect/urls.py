@@ -52,6 +52,10 @@ from app.views import Marriage_Certificate_Delete_View
 from app.views import Marriage_Approval_View
 from app.views import Marriage_Certificate_View
 from app.views import User_Filter_View
+from app.views import Donation_Add_View
+from app.views import Donation_Update_View
+from app.views import Donation_Delete_View
+from app.views import Donation_Paid_View
 
 
 urlpatterns = [
@@ -90,6 +94,10 @@ urlpatterns = [
     path('marriage_approval/<int:record_id>', Marriage_Approval_View.as_view(),name='marriage_approval'),
     path('marriage_certificate/<int:record_id>', Marriage_Certificate_View.as_view(),name='marriage_certificate'),
     path('user_filter/<str:role>', User_Filter_View.as_view(),name='user_filter'),
+    path('donation_add/', Donation_Add_View.as_view(),name='donation_add'),
+    path('donation_update/<int:pk>', Donation_Update_View.as_view(),name='donation_update'),
+    path('donation_delete/<int:pk>', Donation_Delete_View.as_view(),name='donation_delete'),
+    path('donation_paid/<int:pk>', Donation_Paid_View.as_view(),name='donation_paid'),
 
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)  

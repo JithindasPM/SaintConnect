@@ -126,10 +126,9 @@
             <a href="{% url 'admin' %}" class="active"><i class="fas fa-home"></i> Home</a>
             <a href="{% url 'house_name' %}"><i class="fas fa-users"></i> House Names</a>
             <a href="#"><i class="fas fa-calendar"></i> Events</a>
-            <a href="#"><i class="fas fa-hand-holding-usd"></i> Donations</a>
+            <a href="{% url 'donation_add' %}"><i class="fas fa-hand-holding-usd"></i> Donations</a>
             <a href="{% url 'auditorium_add' %}"><i class="fas fa-chart-bar"></i> Auditorium</a>
             <a href="{% url 'admin_approval' %}"><i class="fas fa-envelope"></i> Certificates</a>
-            <a href="#"><i class="fas fa-cog"></i> Settings</a>
         </div>
     </div>
 
@@ -141,8 +140,8 @@
             <div class="profile-dropdown dropdown">
                 <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
                         data-bs-toggle="dropdown">
-                        {% if data.profile_picture %}
-                        <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile"
+                        {% if user.profile_picture %}
+                        <div style="background-image: url('{{ user.profile_picture.url }}')" alt="Profile"
                             class="profile-img"></div>
                         <span>{{request.user}}</span>
                         {% else %}
@@ -153,7 +152,6 @@
                     </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>

@@ -8,6 +8,9 @@ from django.contrib.auth import get_user_model
 from app.models import Baptism_Record
 from app.models import Auditorium
 from app.models import Marriage_Record
+from app.models import Donation
+from app.models import House_Donation
+from app.models import Event
 
 
 class House_Name_Form(forms.ModelForm):
@@ -72,9 +75,9 @@ class UserProfile_Form(forms.ModelForm):
         super(UserProfile_Form, self).__init__(*args, **kwargs)
     
         if user and user.is_superuser:
-            self.fields['house_name'].queryset = House_Name.objects.filter(name='admin')  # Superuser sees only 'admin'
+            self.fields['house_name'].queryset = House_Name.objects.filter(name='Admin')  # Superuser sees only 'Admin'
         else:
-            self.fields['house_name'].queryset = House_Name.objects.exclude(name='admin')  # Regular users see all except 'admin'
+            self.fields['house_name'].queryset = House_Name.objects.exclude(name='Admin')  # Regular users see all except 'Admin'
 
 
 class Login_Form(forms.Form):
@@ -187,4 +190,34 @@ class Marriage_Record_Form(forms.ModelForm):
 
             'marriage_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'held_at': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+
+class Donation_Form(forms.ModelForm):
+    class Meta:
+        model = Donation
+        fields = ['name', 'amount']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter donation name'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter amount'}),
+        }
+
+
+class House_Donation_Form(forms.ModelForm):
+    class Meta:
+        model = House_Donation
+        # fields = ['donation', 'paid_amount']
+        fields = ['paid_amount']
+        widgets = {
+            # 'donation': forms.Select(attrs={'class': 'form-control'}),
+            'paid_amount': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+class Event_Form(forms.ModelForm):
+    class Meta:
+        fields=['event_name','description','date']
+        widgets = {
+            'event_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
         }

@@ -131,4 +131,35 @@ class Marriage_Record(models.Model):
         return f"{self.groom_name} & {self.bride_name} - {self.marriage_date}"
 
 
-   
+class Donation(models.Model):
+    name = models.CharField(max_length=200)
+    amount = models.PositiveIntegerField() 
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
+class House_Donation(models.Model):
+    donation = models.ForeignKey(Donation, on_delete=models.CASCADE)
+    house_name = models.ForeignKey(House_Name, on_delete=models.CASCADE)
+    total_amount = models.PositiveIntegerField()
+    paid_amount = models.PositiveIntegerField(default=0)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    status=models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True, blank=True)
+
+# class Event(models.Model):
+#     user=models.ForeignKey(User,on_delete=models.CASCADE)
+#     hall=models.ForeignKey(Auditorium,on_delete=models.CASCADE)
+#     event_name=models.CharField(max_length=100,null=True,blank=True)
+#     description=models.TextField(null=True,blank=True)
+#     date=models.DateField(null=True,blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+#     updated_at = models.DateTimeField(auto_now=True,null=True, blank=True)
+#     is_approved = models.BooleanField(default=False)
+
+    
+
+
