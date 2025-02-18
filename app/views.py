@@ -128,16 +128,62 @@ class Admin_View(View):
                                             'total_paid':total_paid,'total_approved_events':total_approved_events,
                                             'total_approved_records':total_approved_records})
     
+# class User_View(View):
+#     def get(self,request):
+#         data=UserProfile_Model.objects.get(user_id=request.user)
+#         obj=UserProfile_Model.objects.filter(house_name_id=data.house_name_id).count()
+
+
+#          # Filter House_Donation only for the user's house
+#         if data.house_name:
+#             donation = House_Donation.objects.filter(house_name=data.house_name, status=False)  
+#         else:
+#             donation = House_Donation.objects.none()  # Returns an empty queryset if no house
+#         return render(request,'user.html',{'data':data,'obj':obj,'donation':donation})
+
 class User_View(View):
-    def get(self,request):
-        data=UserProfile_Model.objects.get(user_id=request.user)
-        obj=UserProfile_Model.objects.filter(house_name_id=data.house_name_id).count()
-         # Filter House_Donation only for the user's house
+    def get(self, request):
+        data = UserProfile_Model.objects.get(user_id=request.user)
+        obj = UserProfile_Model.objects.filter(house_name_id=data.house_name_id).count()
+
+        events=Event.objects.filter(user=request.user).count()
+
+        # Count Death, Baptism, and Marriage certificates applied by the user
+        death_count = Death_Record.objects.filter(applied_by=request.user).count()
+        baptism_count = Baptism_Record.objects.filter(applied_by=request.user).count()
+        marriage_count = Marriage_Record.objects.filter(user=request.user).count()
+
+        # Total certificates
+        total_certificates = death_count + baptism_count + marriage_count
+
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+
+        # Fetch donations for the user's house for the current month
         if data.house_name:
-            donation = House_Donation.objects.filter(house_name=data.house_name, status=False)  
+            # Filter House_Donation for the current month
+            donation = House_Donation.objects.filter(house_name=data.house_name,status=False,
+                                                     created_at__month=current_month,created_at__year=current_year)
+            
+            # Calculate the total paid amount for donations in the current month
+            total_paid_amount = House_Donation.objects.filter(
+                house_name=data.house_name, 
+                created_at__month=current_month,
+                created_at__year=current_year
+            ).aggregate(total_paid=Sum('paid_amount'))['total_paid'] or 0
         else:
             donation = House_Donation.objects.none()  # Returns an empty queryset if no house
-        return render(request,'user.html',{'data':data,'obj':obj,'donation':donation})
+            total_paid_amount = 0
+
+        return render(request, 'user.html', {
+            'data': data,
+            'obj': obj,
+            'donation': donation,
+            'total_paid_amount': total_paid_amount,
+            'events':events,
+            'total_certificates':total_certificates
+        })
+
 
 class House_Name_Add_View(View):
     def get(self,request,*args,**kwargs):
@@ -267,15 +313,115 @@ class Death_Approval_View(View):
         death.save()
         return redirect('admin_approval')
 
+# class Death_Certificate_View(View):
+#     def get(self, request, record_id, *args, **kwargs):
+#         death= Death_Record.objects.get(id=record_id)
+#         data=death.member
+#         person=UserProfile_Model.objects.get(user=data)
+#         age=person.age
+#         today = date.today()
+#         formatted_date = today.strftime("%d-%m-%Y")
+#         return render(request,'death_certificate.html',{'death':death,'formatted_date':formatted_date,'age':age})
+
+# from django.http import HttpResponse
+# from django.views import View
+# from django.template.loader import render_to_string
+# from weasyprint import HTML
+# import tempfile
+# from datetime import date
+# from .models import Death_Record, UserProfile_Model
+
+# class Death_Certificate_View(View):
+#     def get(self, request, record_id, *args, **kwargs):
+#         # Fetch death record details
+#         death = Death_Record.objects.get(id=record_id)
+#         data = death.member
+#         person = UserProfile_Model.objects.get(user=data)
+#         age = person.age
+#         today = date.today()
+#         formatted_date = today.strftime("%d-%m-%Y")
+
+#         # Render the HTML template with context
+#         html_content = render_to_string('death_certificate.html', {
+#             'death': death,
+#             'formatted_date': formatted_date,
+#             'age': age
+#         })
+
+#         if "download" in request.GET:
+#             # Generate PDF and return response
+#             response = HttpResponse(content_type='application/pdf')
+#             response['Content-Disposition'] = 'attachment; filename="Death_Certificate.pdf"'
+
+#             with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+#                 HTML(string=html_content).write_pdf(temp_file.name)
+#                 with open(temp_file.name, 'rb') as pdf:
+#                     response.write(pdf.read())
+
+#             return response
+
+#         # Render normal HTML page if not downloading
+#         return render(request, 'death_certificate.html', {
+#             'death': death,
+#             'formatted_date': formatted_date,
+#             'age': age
+#         })
+
+import os
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
+import tempfile
+from django.http import Http404
+
 class Death_Certificate_View(View):
     def get(self, request, record_id, *args, **kwargs):
-        death= Death_Record.objects.get(id=record_id)
-        data=death.member
-        person=UserProfile_Model.objects.get(user=data)
-        age=person.age
+        try:
+            # Fetch death record details
+            death = Death_Record.objects.get(id=record_id)
+            data = death.member
+            person = UserProfile_Model.objects.get(user=data)
+            age = person.age
+        except Death_Record.DoesNotExist:
+            raise Http404("Death record not found")
+        except UserProfile_Model.DoesNotExist:
+            raise Http404("User profile not found")
+
         today = date.today()
         formatted_date = today.strftime("%d-%m-%Y")
-        return render(request,'death_certificate.html',{'death':death,'formatted_date':formatted_date,'age':age})
+
+        # Render the HTML template with context
+        html_content = render_to_string('death_certificate.html', {
+            'death': death,
+            'formatted_date': formatted_date,
+            'age': age
+        })
+
+        if "download" in request.GET:
+            # Generate PDF and return response
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Death_Certificate.pdf"'
+
+            # Ensure temporary directory is not inside OneDrive
+            temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp')
+            if not os.path.exists(temp_dir):
+                os.makedirs(temp_dir)
+
+            # Create temporary file outside OneDrive
+            with tempfile.NamedTemporaryFile(delete=False, dir=temp_dir) as temp_file:
+                HTML(string=html_content).write_pdf(temp_file.name)
+                with open(temp_file.name, 'rb') as pdf:
+                    response.write(pdf.read())
+
+            return response
+
+        # Render normal HTML page if not downloading
+        return render(request, 'death_certificate.html', {
+            'death': death,
+            'formatted_date': formatted_date,
+            'age': age
+        })
+
     
 class Baptism_Certificate_Add_View(View):
     def get(self, request,*args,**kwargs):
@@ -319,15 +465,46 @@ class Baptism_Approval_View(View):
         baptism.save()
         return redirect('admin_approval')
     
+# class Baptism_Certificate_View(View):
+#     def get(self, request, record_id, *args, **kwargs):
+#         baptism= Baptism_Record.objects.get(id=record_id)
+#         data=baptism.member
+#         person=UserProfile_Model.objects.get(user=data)
+#         dob=person.date_of_birth
+#         today = date.today()
+#         formatted_date = today.strftime("%d-%m-%Y")
+#         return render(request,'baptism_certificate.html',{'baptism':baptism,'formatted_date':formatted_date,'dob':dob})
+
+
 class Baptism_Certificate_View(View):
     def get(self, request, record_id, *args, **kwargs):
-        baptism= Baptism_Record.objects.get(id=record_id)
-        data=baptism.member
-        person=UserProfile_Model.objects.get(user=data)
-        dob=person.date_of_birth
+        # Set a custom temporary directory path
+        os.environ["TMPDIR"] = "C:/path/to/your/desired/temp/folder"  # Ensure this folder has write permissions
+        
+        baptism = Baptism_Record.objects.get(id=record_id)
+        data = baptism.member
+        person = UserProfile_Model.objects.get(user=data)
+        dob = person.date_of_birth
         today = date.today()
         formatted_date = today.strftime("%d-%m-%Y")
-        return render(request,'baptism_certificate.html',{'baptism':baptism,'formatted_date':formatted_date,'dob':dob})
+
+        html_content = render_to_string('baptism_certificate.html', {
+            'baptism': baptism,
+            'formatted_date': formatted_date,
+            'dob': dob,
+        })
+
+        if request.GET.get('download') == 'true':
+            # Generate the PDF and return it as a response
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="baptism_certificate_{record_id}.pdf"'
+
+            HTML(string=html_content).write_pdf(response)
+            return response
+        
+        return render(request, 'baptism_certificate.html', {'baptism': baptism, 'formatted_date': formatted_date, 'dob': dob})
+
+
 
 class Auditorium_Add_View(View):
     def get(self,request,*args,**kwargs):
@@ -413,12 +590,40 @@ class Marriage_Approval_View(View):
         marriage.save()
         return redirect('admin_approval')
     
+# class Marriage_Certificate_View(View):
+#     def get(self, request, record_id, *args, **kwargs):
+#         marriage= Marriage_Record.objects.get(id=record_id)
+#         today = date.today()
+#         formatted_date = today.strftime("%d-%m-%Y")
+#         return render(request,'marriage_certificate.html',{'marriage':marriage,'formatted_date':formatted_date})
+
+# from django.shortcuts import render
+# from django.http import HttpResponse
+# from weasyprint import HTML
+# from io import BytesIO
+# from datetime import date
+
 class Marriage_Certificate_View(View):
     def get(self, request, record_id, *args, **kwargs):
-        marriage= Marriage_Record.objects.get(id=record_id)
+        # Fetch the marriage record
+        marriage = Marriage_Record.objects.get(id=record_id)
         today = date.today()
         formatted_date = today.strftime("%d-%m-%Y")
-        return render(request,'marriage_certificate.html',{'marriage':marriage,'formatted_date':formatted_date})
+        
+        # Check if the 'download' parameter is present in the URL
+        if request.GET.get('download'):
+            # Generate the PDF file using WeasyPrint
+            html_content = render(request, 'marriage_certificate.html', {'marriage': marriage, 'formatted_date': formatted_date})
+            pdf_file = HTML(string=html_content.content.decode('utf-8')).write_pdf()
+
+            # Create the HTTP response to prompt the file download
+            response = HttpResponse(pdf_file, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="marriage_certificate_{record_id}.pdf"'
+            return response
+        
+        # If no download parameter, render the certificate normally
+        return render(request, 'marriage_certificate.html', {'marriage': marriage, 'formatted_date': formatted_date})
+
     
 class User_Filter_View(View):
     def get(self,request, role,*args, **kwargs):
@@ -664,13 +869,6 @@ class Event_Approval_View(View):
         event.save()
         return redirect('event_list')
 
-# class Approved_Event_View(View):
-#     def get(self, request, *args, **kwargs):
-#         datas = Event.objects.filter(is_approved=True)
-#         data=UserProfile_Model.objects.get(user_id=request.user)
-#         user = get_object_or_404(UserProfile_Model, user=request.user)
-#         return render(request,'approved_events.html',{'datas':datas,'user':user,'data':data})
-
 class Approved_Event_View(View):
     def get(self, request, *args, **kwargs):
         start_date = request.GET.get('start_date', '')
@@ -703,3 +901,10 @@ class Approved_Event_View(View):
             'start_date': start_date.strftime("%Y-%m-%d") if start_date else '',
             'end_date': end_date.strftime("%Y-%m-%d") if end_date else '',
         })
+    
+class Death_Members_View(View):
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+        death=Death_Record.objects.filter(is_approved=True)
+        return render(request, 'death_members.html', {'death': death, 'user': user})
+        

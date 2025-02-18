@@ -62,6 +62,8 @@ from app.views import Event_Delete_View
 from app.views import Event_List_View
 from app.views import Event_Approval_View
 from app.views import Approved_Event_View
+from app.views import Death_Members_View
+
 
 
 urlpatterns = [
@@ -110,6 +112,8 @@ urlpatterns = [
     path('event_list/', Event_List_View.as_view(),name='event_list'),
     path('event_approval/<int:record_id>', Event_Approval_View.as_view(),name='event_approval'),
     path('approved_events/', Approved_Event_View.as_view(),name='approved_events'),
+    path('death_members/', Death_Members_View.as_view(),name='death_members'),
+
 
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)  

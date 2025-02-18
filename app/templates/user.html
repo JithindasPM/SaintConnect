@@ -241,8 +241,8 @@
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">Revenue</h6>
-                            <h3 class="m-0">$32,485</h3>
+                            <h6 class="text-muted mb-2">Monthly Donations</h6>
+                            <h3 class="m-0">$ {{total_paid_amount}}</h3>
                         </div>
                         <div class="stat-icon">
                             <i class="fas fa-dollar-sign"></i>
@@ -254,11 +254,11 @@
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">Orders</h6>
-                            <h3 class="m-0">524</h3>
+                            <h6 class="text-muted mb-2">Applied events</h6>
+                            <h3 class="m-0">{{events}}</h3>
                         </div>
                         <div class="stat-icon">
-                            <i class="fas fa-shopping-cart"></i>
+                            <i class="fas fa-calendar"></i>
                         </div>
                     </div>
                 </div>
@@ -267,11 +267,11 @@
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">Messages</h6>
-                            <h3 class="m-0">15</h3>
+                            <h6 class="text-muted mb-2">Applied certificates</h6>
+                            <h3 class="m-0">{{total_certificates}}</h3>
                         </div>
                         <div class="stat-icon">
-                            <i class="fas fa-envelope"></i>
+                            <i class="bi bi-file-earmark-fill"></i>
                         </div>
                     </div>
                 </div>
@@ -282,7 +282,7 @@
         <div class="table-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="m-0">Recent Activities</h5>
-                <button class="btn btn-primary btn-sm">All Donations</button>
+                <!-- <button class="btn btn-primary btn-sm">All Donations</button> -->
             </div>
             <div class="table-responsive">
                 <table class="table">

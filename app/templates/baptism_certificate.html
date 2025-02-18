@@ -11,8 +11,10 @@
         body {
             font-family: Arial, sans-serif;
             margin: 40px;
-            padding: 20px;
+            padding: 50px;
             border: 2px solid black;
+            /* padding: 100; */
+            padding-bottom: 200px;
         }
 
         .header {
@@ -32,6 +34,18 @@
             margin-top: 40px;
             text-align: right;
         }
+
+        .download-btn {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Hide download button when printing */
+        @media print {
+            .download-btn {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -43,12 +57,13 @@
     </div>
     <div class="content mt-5">
         <p><strong>Issued Date : </strong>{{ formatted_date }}</p>
-        <p>This is to certify that <strong>{{ baptism.member }}</strong>, born on <strong>{% if dob %}{{ dob }}{% else
-                %}Not Available{% endif %}</strong>, was baptized on <strong>{{ baptism.date_of_baptism }}</strong> at
-            <strong>St. George Orthodox Maha Edavaka , Konni</strong>.</p>
+        <p>This is to certify that <strong>{{ baptism.member }}</strong>, born on <strong>{% if dob %}{{ dob }}{% else %}Not Available{% endif %}</strong>, was baptized on <strong>{{ baptism.date_of_baptism }}</strong> at <strong>St. George Orthodox Maha Edavaka, Konni</strong>.</p>
         <p>This certificate is issued upon request for official and record purposes.</p>
         <p><strong>Father:</strong> {{ baptism.father_name }} | <strong>Mother:</strong> {{ baptism.mother_name }}</p>
     </div>
+    
+    
+    
     <div class="signature">
         <p>_______________________</p>
         <p><strong>Church Authority Name</strong></p>
@@ -57,6 +72,11 @@
     <div class="footer">
         <p>(Church Seal & Stamp)</p>
     </div>
+    {% if not request.GET.download %}
+        <div class="download-btn">
+            <a href="?download=true" class="btn btn-primary">Download PDF</a>
+        </div>
+    {% endif %}
 </body>
 
 </html>

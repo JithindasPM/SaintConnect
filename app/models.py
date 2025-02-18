@@ -161,5 +161,3 @@ class Event(models.Model):
     is_approved = models.BooleanField(default=False)
 
     
-
-

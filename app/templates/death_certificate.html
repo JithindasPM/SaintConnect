@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,23 +13,37 @@
             margin: 40px;
             padding: 20px;
             border: 2px solid black;
+            padding: 50px;
+            padding-bottom: 200px;
         }
+
         .header {
             text-align: center;
         }
+
         .content {
             margin-top: 20px;
         }
+
         .footer {
             margin-top: 50px;
             text-align: center;
         }
+
         .signature {
             margin-top: 40px;
             text-align: right;
         }
+
+        /* Hide download button when generating PDF */
+        @media print {
+            .download-btn {
+                display: none;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h2>St. George Orthodox Maha Edavaka</h2>
@@ -37,11 +52,13 @@
     </div>
     <div class="content mt-5">
         <p><strong>Issued Date : </strong>{{formatted_date}}</p>
-        <p>This is to certify that <strong>{{death.member}}</strong></strong>, aged <strong>{{age}}</strong>, passed away on <strong>{{death.date_of_death}}</strong> at <strong>{{death.place_of_death}}</strong>. The funeral service was held at <strong>{{death.funeral_location}}</strong></p>
-        <p> on <strong>{{death.funeral_date}}</strong>, and the burial took place at <strong>{{death.burial_place}}</strong>.</p>
+        <p>This is to certify that <strong>{{death.member}}</strong>, aged <strong>{{age}}</strong>, passed away on <strong>{{death.date_of_death}}</strong> at <strong>{{death.place_of_death}}</strong>. The funeral service was held at <strong>{{death.funeral_location}}</strong> on <strong>{{death.funeral_date}}</strong>, and the burial took place at <strong>{{death.burial_place}}</strong>.</p>
         <p>This certificate is issued upon request for official and record purposes.</p>
         <p><strong>Next of Kin:</strong> {{death.next_of_kin}} | <strong>Contact:</strong> {{death.contact_number}}</p>
     </div>
+
+    
+
     <div class="signature">
         <p>_______________________</p>
         <p><strong>Church Authority Name</strong></p>
@@ -50,5 +67,12 @@
     <div class="footer">
         <p>(Church Seal & Stamp)</p>
     </div>
+    {% if not request.GET.download %}
+        <!-- Show the download button if the download query param isn't present -->
+        <div class="text-center">
+            <a href="?download=true" class="btn btn-primary download-btn">Download PDF</a>
+        </div>
+    {% endif %}
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,31 +10,38 @@
         body {
             font-family: Arial, sans-serif;
             margin: 40px;
-            padding: 20px;
+            padding: 50px;
+            padding-bottom: 100px;
             border: 2px solid black;
         }
+
         .header {
             text-align: center;
         }
+
         .content {
             margin-top: 20px;
         }
+
         .footer {
             margin-top: 50px;
             text-align: center;
         }
+
         .signature {
             margin-top: 40px;
             text-align: right;
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h2>St. George Orthodox Maha Edavaka</h2>
         <p>Konni | storthodoxmahaedavaka@gmail.com | 9785412368</p>
         <h3>Marriage Certificate</h3>
     </div>
+
     <p class="mt-5">
         This is to officially certify that <strong>{{ marriage.groom_name }}</strong>,
         son of <strong>{{ marriage.groom_father_name }}</strong> and 
@@ -41,11 +49,13 @@
         <strong>{{ marriage.groom_address }}</strong>,
         and <strong>{{ marriage.bride_name }}</strong>, 
         daughter of <strong>{{ marriage.bride_father_name }}</strong> and 
-        <strong>{{ marriage.bride_mother_name }}</strong>,</p> 
-        <p> residing at 
+        <strong>{{ marriage.bride_mother_name }}</strong>,
+    </p> 
+
+    <p> residing at 
         <strong>{{ marriage.bride_address }}</strong>,
-        were lawfully joined in Holy Matrimony.</p>
-    
+        were lawfully joined in Holy Matrimony.
+    </p>
 
     <p class="mt-3">
         The sacred marriage ceremony took place on <strong>{{ marriage.marriage_date }}</strong> 
@@ -56,14 +66,22 @@
     <p class="mt-3">
         This certificate is issued upon request for legal and official purposes.
     </p>
-</div>
+
+
     <div class="signature">
         <p>_______________________</p>
         <p><strong>Church Authority Name</strong></p>
         <p>Designation</p>
     </div>
+
     <div class="footer">
         <p>(Church Seal & Stamp)</p>
     </div>
+    {% if not request.GET.download %}
+    <div class="download-btn" style="text-align: center; margin-top: 30px;">
+        <a href="?download=true" class="btn btn-primary">Download PDF</a>
+    </div>
+    {% endif %}
 </body>
+
 </html>
