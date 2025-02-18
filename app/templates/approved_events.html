@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaintConnect - User Dashboard</title>
+    <title>SaintConnect - Events</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -98,31 +98,6 @@
             border-radius: 0.75rem;
         }
 
-        .stat-card {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-            transition: transform var(--transition-speed);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
         .table-container {
             background: white;
             border-radius: 0.75rem;
@@ -160,7 +135,8 @@
             font-size: 1.5rem;
             color: #4b5563;
         }
-        .sidebar-a{
+
+        .sidebar-a {
             text-decoration: none;
         }
 
@@ -176,7 +152,9 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-logo">
-            <a class="sidebar-a" href="{% url 'home' %}"><h4 class="m-0" style="color: var(--primary-color)">SaintConnect</h4></a>
+            <a class="sidebar-a" href="{% url 'home' %}">
+                <h4 class="m-0" style="color: var(--primary-color)">SaintConnect</h4>
+            </a>
         </div>
         <div class="sidebar-menu">
             <a href="{% url 'user' %}" class="active"><i class="fas fa-home"></i> Home</a>
@@ -194,7 +172,7 @@
                 <button class="hamburger-menu">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h4 class="m-0">Dashboard Overview</h4>
+                <h4 class="m-0">Events</h4>
             </div>
             <div class="profile-dropdown dropdown">
                 <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
@@ -204,8 +182,7 @@
                         class="profile-img"></div>
                     <span>{{request.user}}</span>
                     {% else %}
-                    <div style="border: 1px solid black;" alt="Profile"
-                        class="profile-img"></div>
+                    <div style="border: 1px solid black;" alt="Profile" class="profile-img"></div>
                     <span>{{request.user}}</span>
                     {% endif %}
                 </button>
@@ -222,91 +199,103 @@
             </div>
         </div>
 
-        <!-- Stats Row -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Family Members</h6>
-                            <h3 class="m-0">{{obj}}</h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Revenue</h6>
-                            <h3 class="m-0">$32,485</h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Orders</h6>
-                            <h3 class="m-0">524</h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Messages</h6>
-                            <h3 class="m-0">15</h3>
-                        </div>
-                        <div class="stat-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Recent Activity Table -->
-        <div class="table-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="m-0">Recent Activities</h5>
-                <button class="btn btn-primary btn-sm">All Donations</button>
-            </div>
-            <div class="table-responsive">
+        <!-- <div class="table-responsive">
+            {% if datas %}
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Donation</th>
-                            <th>Amount</th>
+                            <th>Event</th>
+                            <th>Hall</th>
                             <th>Date</th>
-                            <th>Transaction</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for i in donation %}
+                        {% for i in datas %}
                         <tr>
-                            <td>{{i.donation}}</td>
-                            <td>{{i.total_amount}}</td>
-                            <td>{{i.created_at}}</td>
-                            <td><a href="{% url 'donation_paid' i.id %}" class="btn btn-sm btn-outline-primary">Pay <i class="bi bi-coin"></i></a></td>
+                            <td>{{ i.event_name }}</td>
+                            <td>{{ i.hall }}</td>
+                            <td>{{ i.date }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+            {% else %}
+                <p class="text-center text-muted">No events available.</p>
+            {% endif %}
+        </div> -->
+        <div class="container">
+            <!-- Date Filter Form -->
+            <form method="GET" class="mb-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" id="start_date" name="start_date" class="form-control" value="{{ start_date }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="end_date">End Date:</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control" value="{{ end_date }}">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </div>
+            </form>
+        
+            <!-- Events Table -->
+            <div class="table-responsive">
+                {% if datas %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Hall</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in datas %}
+                                <tr>
+                                    <td>{{ i.event_name }}</td>
+                                    <td>{{ i.hall }}</td>
+                                    <td>{{ i.date }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-center text-muted">No events available.</p>
+                {% endif %}
             </div>
+        
+            <!-- Pagination Controls -->
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if datas.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1&start_date={{ start_date }}&end_date={{ end_date }}">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ datas.previous_page_number }}&start_date={{ start_date }}&end_date={{ end_date }}">Previous</a>
+                        </li>
+                    {% endif %}
+        
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ datas.number }} of {{ datas.paginator.num_pages }}</span>
+                    </li>
+        
+                    {% if datas.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ datas.next_page_number }}&start_date={{ start_date }}&end_date={{ end_date }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ datas.paginator.num_pages }}&start_date={{ start_date }}&end_date={{ end_date }}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
+               
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>

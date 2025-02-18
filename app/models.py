@@ -150,15 +150,15 @@ class House_Donation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True,null=True, blank=True)
 
-# class Event(models.Model):
-#     user=models.ForeignKey(User,on_delete=models.CASCADE)
-#     hall=models.ForeignKey(Auditorium,on_delete=models.CASCADE)
-#     event_name=models.CharField(max_length=100,null=True,blank=True)
-#     description=models.TextField(null=True,blank=True)
-#     date=models.DateField(null=True,blank=True)
-#     created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
-#     updated_at = models.DateTimeField(auto_now=True,null=True, blank=True)
-#     is_approved = models.BooleanField(default=False)
+class Event(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    hall=models.ForeignKey(Auditorium,on_delete=models.CASCADE)
+    event_name=models.CharField(max_length=100,null=True,blank=True)
+    description=models.TextField(null=True,blank=True)
+    date=models.DateField(null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True, blank=True)
+    is_approved = models.BooleanField(default=False)
 
     
 

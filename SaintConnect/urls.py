@@ -56,6 +56,12 @@ from app.views import Donation_Add_View
 from app.views import Donation_Update_View
 from app.views import Donation_Delete_View
 from app.views import Donation_Paid_View
+from app.views import Event_Add_View
+from app.views import Event_Update_View
+from app.views import Event_Delete_View
+from app.views import Event_List_View
+from app.views import Event_Approval_View
+from app.views import Approved_Event_View
 
 
 urlpatterns = [
@@ -98,6 +104,12 @@ urlpatterns = [
     path('donation_update/<int:pk>', Donation_Update_View.as_view(),name='donation_update'),
     path('donation_delete/<int:pk>', Donation_Delete_View.as_view(),name='donation_delete'),
     path('donation_paid/<int:pk>', Donation_Paid_View.as_view(),name='donation_paid'),
+    path('event_add/', Event_Add_View.as_view(),name='event_add'),
+    path('event_update/<int:pk>', Event_Update_View.as_view(),name='event_update'),
+    path('event_delete/<int:pk>', Event_Delete_View.as_view(),name='event_delete'),
+    path('event_list/', Event_List_View.as_view(),name='event_list'),
+    path('event_approval/<int:record_id>', Event_Approval_View.as_view(),name='event_approval'),
+    path('approved_events/', Approved_Event_View.as_view(),name='approved_events'),
 
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)  

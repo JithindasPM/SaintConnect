@@ -139,7 +139,7 @@
         <div class="sidebar-menu">
             <a href="{% url 'admin' %}" class="active"><i class="fas fa-home"></i> Home</a>
             <a href="{% url 'house_name' %}"><i class="fas fa-users"></i> House Names</a>
-            <a href="#"><i class="fas fa-calendar"></i> Events</a>
+            <a href="{% url 'event_list' %}"><i class="fas fa-calendar"></i> Events</a>
             <a href="{% url 'donation_add' %}"><i class="fas fa-hand-holding-usd"></i> Donations</a>
             <a href="{% url 'auditorium_add' %}"><i class="fas fa-chart-bar"></i> Auditorium</a>
             <a href="{% url 'admin_approval' %}"><i class="fas fa-envelope"></i> Certificates</a>
@@ -194,7 +194,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-2">Monthly Donations</h6>
-                            <h3 class="m-0">$45,250</h3>
+                            <h3 class="m-0">$ {{total_paid}}</h3>
                         </div>
                         <div class="stat-icon">
                             <i class="fas fa-hand-holding-usd"></i>
@@ -207,7 +207,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-2">Active Events</h6>
-                            <h3 class="m-0">12</h3>
+                            <h3 class="m-0">{{total_approved_events}}</h3>
                         </div>
                         <div class="stat-icon">
                             <i class="fas fa-calendar"></i>
@@ -219,11 +219,11 @@
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">New Messages</h6>
-                            <h3 class="m-0">28</h3>
+                            <h6 class="text-muted mb-2">Certificates</h6>
+                            <h3 class="m-0">{{total_approved_records}}</h3>
                         </div>
                         <div class="stat-icon">
-                            <i class="fas fa-envelope"></i>
+                            <i class="bi bi-file-earmark-fill"></i>
                         </div>
                     </div>
                 </div>

@@ -215,9 +215,22 @@ class House_Donation_Form(forms.ModelForm):
 
 class Event_Form(forms.ModelForm):
     class Meta:
-        fields=['event_name','description','date']
+        model=Event
+        fields=['hall','event_name','description','date']
         widgets = {
+            'hall': forms.Select(attrs={'class': 'form-control'}),
             'event_name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
         }
+
+
+class EventFilterForm(forms.Form):
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        required=True
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        required=True
+    )

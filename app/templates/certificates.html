@@ -188,9 +188,8 @@
         </div>
         <div class="sidebar-menu">
             <a href="{% url 'user' %}" class="active"><i class="fas fa-home"></i> Home</a>
-            <a href=""><i class="fas fa-users"></i> Profile Update</a>
-            <a href="#"><i class="fas fa-shopping-cart"></i> Products</a>
-            <a href="#"><i class="fas fa-chart-bar"></i> Analytics</a>
+            <a href="{% url 'event_add' %}"><i class="bi bi-buildings"></i> Auditorium</a>
+            <a href="{% url 'approved_events' %}"><i class="fas fa-calendar"></i> Events</a>
             <a href="{% url 'certificate' %}"><i class="fas fa-envelope"></i> Certificates</a>
         </div>
     </div>

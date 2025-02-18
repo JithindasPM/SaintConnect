@@ -3,6 +3,8 @@ from django.views.generic import View
 from django.contrib.auth import authenticate,login,logout
 from datetime import date
 from django.db.models import Sum
+from django.core.paginator import Paginator
+from datetime import datetime
 
 from app.models import User
 from app.models import House_Name
@@ -91,21 +93,40 @@ class Logout_View(View):
         logout(request)
         return redirect('home')
     
+from django.utils import timezone
+
 class Admin_View(View):
     def get(self,request):
         datas = User.objects.filter(is_superuser=False).count()
         user_id=request.user.id
         user=UserProfile_Model.objects.get(user_id=user_id)
-        # id=request.user.id
-        # data=UserProfile_Model.objects.get(user_id=id)
-        house_list = House_Name.objects.exclude(name='Admin')
+        now = timezone.now()
+
+        # Count approved records for each model in the current month
+        approved_death_records = Death_Record.objects.filter(is_approved=True,created_at__month=now.month,created_at__year=now.year).count()
+        approved_baptism_records = Baptism_Record.objects.filter(is_approved=True,created_at__month=now.month,created_at__year=now.year).count()
+        approved_marriage_records = Marriage_Record.objects.filter(is_approved=True,created_at__month=now.month,created_at__year=now.year).count()
+
+        # Calculate total approved records
+        total_approved_records = approved_death_records + approved_baptism_records + approved_marriage_records
+
+        # Calculate total number of approved events for the current month
+        total_approved_events = Event.objects.filter(is_approved=True,created_at__month=now.month,created_at__year=now.year).count()
+
+        # Calculate total paid_amount for the current month
+        total_paid_for_month = House_Donation.objects.filter(created_at__month=now.month,created_at__year=now.year).aggregate(Sum('paid_amount'))
+        # Access the sum from the result
+        total_paid = total_paid_for_month['paid_amount__sum'] or 0  # Default to 0 if no results
 
         # Calculate total donation for each house
+        house_list = House_Name.objects.exclude(name='Admin')
         house_donations = []
         for house in house_list:
             total_donation = House_Donation.objects.filter(house_name=house).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
             house_donations.append({'house': house, 'total_donation': total_donation})
-        return render(request,'admin.html',{'datas':datas,'house_donations':house_donations,'user':user})
+        return render(request,'admin.html',{'datas':datas,'house_donations':house_donations,'user':user,
+                                            'total_paid':total_paid,'total_approved_events':total_approved_events,
+                                            'total_approved_records':total_approved_records})
     
 class User_View(View):
     def get(self,request):
@@ -183,7 +204,8 @@ class Delete(View):
 class All_Member_View(View):
     def get(self, request,*args,**kwargs):
         data=User.objects.filter(is_superuser=False)
-        return render(request,'all_members.html',{'data':data})
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+        return render(request,'all_members.html',{'data':data,'user':user})
     
 class Certificate_View(View):
     def get(self, request,*args,**kwargs):
@@ -400,8 +422,9 @@ class Marriage_Certificate_View(View):
     
 class User_Filter_View(View):
     def get(self,request, role,*args, **kwargs):
+        user = get_object_or_404(UserProfile_Model, user=request.user)
         users = UserProfile_Model.objects.filter(role=role).exclude(user__is_superuser=True)
-        return render(request, 'user_filter.html', {'users': users, 'role': role})
+        return render(request, 'user_filter.html', {'users': users, 'role': role,'user':user})
     
     
 class Donation_Add_View(View):
@@ -524,54 +547,159 @@ class Donation_Paid_View(View):
             'paid_amount': data.paid_amount
         })
     
+from django.contrib import messages
+from django.utils.timezone import now
+from datetime import timedelta
+    
 class Event_Add_View(View):
     def get(self,request,*args,**kwargs):
         form=Event_Form()
-        return render(request,'event_form.html',{'form':form})
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+        one_month_ago = now().date() - timedelta(days=30)
+        datas = Event.objects.filter(user=request.user, date__gte=one_month_ago).order_by('-id')
+        return render(request,'event_form.html',{'form':form,'datas':datas,'user':user})
+        
+    def post(self,request,*args,**kwargs):
+        one_month_ago = now().date() - timedelta(days=30)
+        datas = Event.objects.filter(user=request.user, date__gte=one_month_ago).order_by('-id')
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+        form = Event_Form(request.POST)
+        if form.is_valid():
+            user = request.user
+            hall = form.cleaned_data['hall']
+            event_name = form.cleaned_data['event_name']
+            description = form.cleaned_data['description']
+            date = form.cleaned_data['date']
+
+            if Event.objects.filter(hall=hall, date=date).exists():
+                messages.error(request, f"The auditorium '{hall}' is already booked for {date}.")
+                form = Event_Form()
+                user = get_object_or_404(UserProfile_Model, user=request.user)
+                return render(request, 'event_form.html', {"form": form,'datas':datas,'user':user})
+
+            if Event.objects.filter(date=date).count() >= 3:
+                messages.error(request, f"Only three events are allowed per day. No more bookings available for {date}.")
+                form = Event_Form()
+                user = get_object_or_404(UserProfile_Model, user=request.user)
+                return render(request, 'event_form.html', {"form": form,'datas':datas,'user':user})
+
+            event = Event(user=user, hall=hall, event_name=event_name, description=description, date=date)
+            event.save()
+
+            messages.success(request, f"Your event '{event_name}' has been submitted for {date} and is awaiting approval.")
+
+            form=Event_Form()
+            user = get_object_or_404(UserProfile_Model, user=request.user)
+            return render(request, 'event_form.html', {"form": form,'datas':datas,'user':user})
+        form=Event_Form()
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+        return render(request, 'event_form.html', {"form": form,'datas':datas,'user':user})
 
 
-# from django.shortcuts import render, redirect
-# from django.contrib import messages
-# from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.views import View
-# from .models import Event
-# from .forms import EventForm
+class Event_Update_View(View):
+    def get(self, request, *args, **kwargs):
+        id = kwargs.get('pk')
+        event_instance = get_object_or_404(Event, id=id)
+        form = Event_Form(instance=event_instance)
+        one_month_ago = now().date() - timedelta(days=30)
+        datas = Event.objects.filter(user=request.user, date__gte=one_month_ago).order_by('-id')
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+        return render(request, 'event_form.html', {'form': form, "datas": datas, 'user': user})
 
-# class BookAuditoriumView(LoginRequiredMixin, View):
-#     template_name = "book_auditorium.html"  
-
-#     def get(self, request):
-#         """Display the booking form"""
-#         form = EventForm()
-#         return render(request, self.template_name, {"form": form})
-
-#     def post(self, request):
-#         """Handle form submission"""
-#         form = EventForm(request.POST)
-#         if form.is_valid():
-#             user = request.user
-#             hall = form.cleaned_data['hall']
-#             event_name = form.cleaned_data['event_name']
-#             description = form.cleaned_data['description']
-#             date = form.cleaned_data['date']
-
-#             # Check if this auditorium is already booked on the same date
-#             if Event.objects.filter(hall=hall, date=date).exists():
-#                 messages.error(request, f"The auditorium '{hall}' is already booked for {date}.")
-#                 return render(request, self.template_name, {"form": form})
-
-#             # Check if the total number of events on this date is already 3
-#             if Event.objects.filter(date=date).count() >= 3:
-#                 messages.error(request, f"Only three events are allowed per day. No more bookings available for {date}.")
-#                 return render(request, self.template_name, {"form": form})
-
-#             # Save the event if validation passes
-#             event = Event(user=user, hall=hall, event_name=event_name, description=description, date=date)
-#             event.save()
-
-#             messages.success(request, f"Your event '{event_name}' has been booked successfully for {date}.")
-#             return redirect("event_list")  
-
-#         return render(request, self.template_name, {"form": form})  
+    def post(self, request, *args, **kwargs):
+        id = kwargs.get('pk')
+        event_instance = get_object_or_404(Event, id=id)
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+        one_month_ago = now().date() - timedelta(days=30)
+        datas = Event.objects.filter(user=request.user, date__gte=one_month_ago).order_by('-id')
+        form = Event_Form(request.POST, instance=event_instance)
+        if form.is_valid():
+            form.save()
+            form = Event_Form()
+            messages.success(request, "Your event has been updated successfully.")
+        return redirect('event_add')
 
 
+class Event_Delete_View(View):
+    def get(self, request, *args, **kwargs):
+        id=kwargs.get('pk')
+        Event.objects.get(id=id).delete()
+        return redirect('event_add')
+
+class Event_List_View(View):
+    def get(self, request, *args, **kwargs):
+        # Get start and end date from request
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+
+        # Convert dates to proper format if provided
+        if start_date and end_date:
+            try:
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                datas = Event.objects.filter(date__range=[start_date, end_date]).order_by('date')
+            except ValueError:
+                datas = Event.objects.all().order_by('date')  # If date parsing fails, return all events
+        else:
+            datas = Event.objects.all().order_by('date')  # Default: return all events
+
+        # Paginate the events (10 per page)
+        paginator = Paginator(datas, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        # Get user profile
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+
+        # Render template
+        return render(request, 'event_approval.html', {'page_obj': page_obj, 'user': user, 'start_date': start_date, 'end_date': end_date})
+
+
+class Event_Approval_View(View):
+    def post(self, request, record_id, *args, **kwargs):
+        datas=Event.objects.all()
+        user = get_object_or_404(UserProfile_Model, user=request.user)
+        event= Event.objects.get(id=record_id)
+        event.is_approved = not event.is_approved  # Toggle between True/False
+        event.save()
+        return redirect('event_list')
+
+# class Approved_Event_View(View):
+#     def get(self, request, *args, **kwargs):
+#         datas = Event.objects.filter(is_approved=True)
+#         data=UserProfile_Model.objects.get(user_id=request.user)
+#         user = get_object_or_404(UserProfile_Model, user=request.user)
+#         return render(request,'approved_events.html',{'datas':datas,'user':user,'data':data})
+
+class Approved_Event_View(View):
+    def get(self, request, *args, **kwargs):
+        start_date = request.GET.get('start_date', '')
+        end_date = request.GET.get('end_date', '')
+
+        # Get events that are approved
+        datas = Event.objects.filter(is_approved=True)
+
+        # Filter based on date range if both dates are provided
+        if start_date and end_date:
+            try:
+                start_date = datetime.strptime(start_date, "%Y-%m-%d")
+                end_date = datetime.strptime(end_date, "%Y-%m-%d")
+                datas = datas.filter(date__range=[start_date, end_date])
+            except ValueError:
+                pass  # Handle invalid date formats
+
+        # Pagination (10 records per page)
+        paginator = Paginator(datas, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        # Get user profile
+        data = get_object_or_404(UserProfile_Model, user=request.user)
+
+        return render(request, 'approved_events.html', {
+            'datas': page_obj,
+            'user': data,
+            'data': data,
+            'start_date': start_date.strftime("%Y-%m-%d") if start_date else '',
+            'end_date': end_date.strftime("%Y-%m-%d") if end_date else '',
+        })

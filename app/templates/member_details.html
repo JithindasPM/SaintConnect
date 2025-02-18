@@ -239,12 +239,11 @@
         </div>
         <div class="sidebar-menu">
             <a href="{% url 'home' %}" class="active"><i class="fas fa-home"></i> Dashboard</a>
-            <a href=""><i class="fas fa-users"></i> House Names</a>
-            <a href="#"><i class="fas fa-calendar"></i> Events</a>
-            <a href="#"><i class="fas fa-hand-holding-usd"></i> Donations</a>
-            <a href="#"><i class="fas fa-chart-bar"></i> Reports</a>
-            <a href="#"><i class="fas fa-envelope"></i> Messages</a>
-            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+            <a href="{% url 'house_name' %}"><i class="fas fa-users"></i> House Names</a>
+            <a href="{% url 'event_list' %}"><i class="fas fa-calendar"></i> Events</a>
+            <a href="{% url 'donation_add' %}"><i class="fas fa-hand-holding-usd"></i> Donations</a>
+            <a href="{% url 'auditorium_add' %}"><i class="fas fa-chart-bar"></i> Reports</a>
+            <a href="{% url 'admin_approval' %}"><i class="fas fa-envelope"></i> Messages</a>
         </div>
     </div>
 
@@ -260,7 +259,6 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="{% url 'house_name' %}"><i class="fas fa-user me-2"></i> Profile</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                 </ul>
