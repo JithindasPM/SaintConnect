@@ -95,7 +95,7 @@ class Death_Record_Form(forms.ModelForm):
     class Meta:
         model = Death_Record
         fields = ['member', 'date_of_death', 'place_of_death', 'funeral_date', 
-                  'funeral_location', 'burial_place', 'next_of_kin', 'contact_number']
+                  'funeral_location', 'burial_place', 'next_of_kin', 'contact_number','priest']
         read_only_fields = ['created_at', 'updated_at', 'is_approved']
 
         widgets = {
@@ -107,6 +107,7 @@ class Death_Record_Form(forms.ModelForm):
             'burial_place': forms.TextInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter burial place . . .'}),
             'next_of_kin': forms.TextInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter next of kin . . .'}),
             'contact_number': forms.NumberInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter contact number . . .'}),
+            'priest': forms.TextInput(attrs={'class': 'form-control my-1', 'placeholder': 'Enter the name of the priest . . .'}),
         }
 
     def __init__(self, *args, **kwargs):

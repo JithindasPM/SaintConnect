@@ -29,31 +29,18 @@ class UserProfile_Model(models.Model):
     ]
 
     name=models.CharField(max_length=100,null=True)
-
     house_name=models.ForeignKey(House_Name,on_delete=models.CASCADE,null=True,blank=True)
-
     address=models.TextField(null=True)
-
     age=models.PositiveIntegerField(null=True)
-
     email=models.EmailField(null=True)
-
     gender=models.CharField(max_length=100,choices=GENDER_CHOICES,null=True)
-    
     profile_picture=models.FileField(upload_to='images',null=True,blank=True)
-
     phone_number=models.PositiveIntegerField(null=True)
-
     role=models.CharField(max_length=100,choices=ROLE_CHOICES,null=True)
-
     date_of_birth=models.DateField(null=True,blank=True)
-
     user=models.OneToOneField(User,on_delete=models.CASCADE)
-
     created_date=models.DateField(auto_now_add=True)  
-
     updated_date=models.DateField(auto_now=True)
-
     is_active=models.BooleanField(default=True)
 
     def __str__(self):
@@ -74,6 +61,7 @@ class Death_Record(models.Model):
     burial_place = models.CharField(max_length=255, blank=True, null=True)
     next_of_kin = models.CharField(max_length=255, blank=True, null=True)
     contact_number = models.CharField(max_length=15, blank=True, null=True)
+    priest=models.CharField(max_length=255,blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_approved = models.BooleanField(default=False)

@@ -70,6 +70,10 @@
                         <label class="form-label">Burial Place</label>
                         {{ form.burial_place }}
                     </div>
+                    <div class="col-12">
+                        <label class="form-label">Priest</label>
+                        {{ form.priest }}
+                    </div>
                     <div class="col-md-6">
                         <label class="form-label">Next of Kin</label>
                         {{ form.next_of_kin }}
@@ -80,9 +84,15 @@
                     </div>
                 </div>
 
+                {% if not request.user.is_staff %}
                 <button type="submit" class="btn btn-primary submit-btn">
-                    Submit Request
+                Submit Request
                 </button>
+                {% else %}
+                <div class="w-100 d-flex justify-content-center mt-3">
+                    <a class="btn btn-primary" href="{% url 'admin_approval' %}">Close</a>
+                </div>
+                {% endif %}
             </form>
         </div>
     </div>

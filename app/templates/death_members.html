@@ -136,17 +136,16 @@
             <h4 class="m-0">Dashboard</h4>
             <div class="profile-dropdown dropdown">
                 <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
-                        data-bs-toggle="dropdown">
-                        {% if user.profile_picture %}
-                        <div style="background-image: url('{{ user.profile_picture.url }}')" alt="Profile"
-                            class="profile-img"></div>
-                        <span>{{request.user}}</span>
-                        {% else %}
-                        <div style="border: 1px solid black;" alt="Profile"
-                            class="profile-img"></div>
-                        <span>{{request.user}}</span>
-                        {% endif %}
-                    </button>
+                    data-bs-toggle="dropdown">
+                    {% if user.profile_picture %}
+                    <div style="background-image: url('{{ user.profile_picture.url }}')" alt="Profile"
+                        class="profile-img"></div>
+                    <span>{{request.user}}</span>
+                    {% else %}
+                    <div style="border: 1px solid black;" alt="Profile" class="profile-img"></div>
+                    <span>{{request.user}}</span>
+                    {% endif %}
+                </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
                     <li>
@@ -171,6 +170,7 @@
                         <th>House name</th>
                         <th>Date of Death</th>
                         <th>Requester</th>
+                        <th>Priest</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -180,6 +180,11 @@
                         <td>{{ i.member.userprofile_model.house_name }}</td>
                         <td>{{i.date_of_death}}</td>
                         <td>{{i.applied_by}}</td>
+                        {% if i.priest %}
+                        <td>{{ i.priest }}</td>
+                        {% else %}
+                        <td>No name added</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

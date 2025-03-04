@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -223,6 +224,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Mobile Menu Toggle -->
     <button class="mobile-menu-toggle">
@@ -253,14 +255,19 @@
         <div class="top-bar d-flex justify-content-between align-items-center">
             <h4 class="m-0">Dashboard</h4>
             <div class="profile-dropdown dropdown">
-                <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-                    <img src="/api/placeholder/32/32" alt="Profile" class="profile-img rounded-circle">
+                <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
+                    data-bs-toggle="dropdown">
+                    <!-- <img src="/api/placeholder/32/32" alt="Profile" class="profile-img rounded-circle"> -->
                     <span>Admin User</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{% url 'house_name' %}"><i class="fas fa-user me-2"></i> Profile</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    <li><a class="dropdown-item" href="{% url 'house_name' %}"><i class="fas fa-user me-2"></i>
+                            Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                                class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -270,7 +277,7 @@
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h2 class="m-0">{{house_name}}</h2>
                 <!-- <button class="btn btn-primary btn-sm">View All</button> -->
-                 <a class="btn btn-primary btn-sm" href="{% url 'admin' %}">View All</a>
+                <a class="btn btn-primary btn-sm" href="{% url 'admin' %}">View All</a>
             </div>
         </div>
 
@@ -284,21 +291,29 @@
                     {% else %}
                     <div class="profile-image no-image"></div>
                     {% endif %}
-                    
+
                     <div class="profile-info">
-                        <h3 class="profile-name">{{i.name}}</h3>
-                        <div class="profile-role text-primary fw-bold mb-3">{{i.role}}</div>
-                        
-                        <ul class="profile-details list-unstyled">
-                            <li><i class="fas fa-home me-2 text-primary"></i> {{i.house_name}}</li>
-                            <li><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{i.address}}</li>
-                            <li><i class="fas fa-birthday-cake me-2 text-primary"></i> {{i.age}} years old</li>
-                            <li><i class="fas fa-envelope me-2 text-primary"></i> {{i.email}}</li>
-                            <li><i class="fas fa-phone me-2 text-primary"></i> {{i.phone_number}}</li>
+                        <h3 class="profile-name">{{ i.name }}</h3>
+                        <div class="profile-role text-primary fw-bold mb-3">{{ i.role }}</div>
+
+                        <!-- Status -->
+                        {% if i.is_dead %}
+                        <span class="badge bg-danger">Deceased</span>
+                        {% else %}
+                        <span class="badge bg-success">Alive</span>
+                        {% endif %}
+
+                        <ul class="profile-details list-unstyled mt-2">
+                            <li><i class="fas fa-home me-2 text-primary"></i> {{ i.house_name }}</li>
+                            <li><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ i.address }}</li>
+                            <li><i class="fas fa-birthday-cake me-2 text-primary"></i> {{ i.age }} years old</li>
+                            <li><i class="fas fa-envelope me-2 text-primary"></i> {{ i.email }}</li>
+                            <li><i class="fas fa-phone me-2 text-primary"></i> {{ i.phone_number }}</li>
                         </ul>
                     </div>
                 </div>
                 {% endfor %}
+
             </div>
         </div>
     </div>
@@ -327,4 +342,5 @@
         });
     </script>
 </body>
+
 </html>

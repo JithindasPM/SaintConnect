@@ -242,10 +242,16 @@
                         </div>
                     </div>
                 </div>
-
+                {% if not request.user.is_staff %}
                 <div class="col-12 text-center mt-4 mb-5">
                     <button type="submit" class="btn btn-primary">Submit Application</button>
                 </div>
+                {% else %}
+                <div class="w-100 d-flex justify-content-center">
+                    <a class="btn btn-primary" href="{% url 'admin_approval' %}">Close</a>
+                </div>
+                {% endif %}
+
             </div>
         </form>
     </div>

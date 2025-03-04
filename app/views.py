@@ -5,6 +5,19 @@ from datetime import date
 from django.db.models import Sum
 from django.core.paginator import Paginator
 from datetime import datetime
+from django.utils import timezone
+from django.contrib import messages
+from django.utils.timezone import now
+from datetime import timedelta
+import os
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
+import tempfile
+from django.http import Http404
+from django.utils.decorators import method_decorator
+from django.db.models import Exists, OuterRef
+
 
 from app.models import User
 from app.models import House_Name
@@ -30,6 +43,16 @@ from app.forms import House_Donation_Form
 from app.forms import Event_Form
 
 # Create your views here.
+
+
+
+def Login_required(fn):
+    def wrapper(request,*args,**kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        else:
+            return fn(request,*args,**kwargs)
+    return wrapper  
 
 class Home_View(View):
     def get(self,request):
@@ -93,8 +116,7 @@ class Logout_View(View):
         logout(request)
         return redirect('home')
     
-from django.utils import timezone
-
+@method_decorator(Login_required,name='dispatch')
 class Admin_View(View):
     def get(self,request):
         datas = User.objects.filter(is_superuser=False).count()
@@ -141,6 +163,7 @@ class Admin_View(View):
 #             donation = House_Donation.objects.none()  # Returns an empty queryset if no house
 #         return render(request,'user.html',{'data':data,'obj':obj,'donation':donation})
 
+@method_decorator(Login_required,name='dispatch')
 class User_View(View):
     def get(self, request):
         data = UserProfile_Model.objects.get(user_id=request.user)
@@ -184,7 +207,7 @@ class User_View(View):
             'total_certificates':total_certificates
         })
 
-
+@method_decorator(Login_required,name='dispatch')
 class House_Name_Add_View(View):
     def get(self,request,*args,**kwargs):
         form=House_Name_Form()
@@ -202,6 +225,7 @@ class House_Name_Add_View(View):
             data=House_Name.objects.all()
             return render(request,'house_name.html',{'form':form,'data':data,'user':user})
 
+@method_decorator(Login_required,name='dispatch')
 class House_Name_Update_View(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get('pk')
@@ -220,21 +244,25 @@ class House_Name_Update_View(View):
             form=House_Name_Form()
             data=House_Name.objects.all()
             return redirect('house_name')
-        
+
+@method_decorator(Login_required,name='dispatch')      
 class House_Name_Delete_View(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get('pk')
         House_Name.objects.get(id=id).delete()
         return redirect('house_name')
     
+
+@method_decorator(Login_required,name='dispatch')  
 class Member_Details_View(View):
-    def get(self, request,*args,**kwargs):
-        house_id=kwargs.get('pk')
-        data=UserProfile_Model.objects.filter(house_name_id=house_id)
+    def get(self, request, *args, **kwargs):
+        house_id = kwargs.get('pk')
+        death_records = Death_Record.objects.filter(member=OuterRef('user'), is_approved=True)
+        data = UserProfile_Model.objects.filter(house_name_id=house_id).annotate(
+            is_dead=Exists(death_records)
+        )
         house_name = House_Name.objects.get(id=house_id).name if House_Name.objects.filter(id=house_id).exists() else None
-        print(house_name)
-        return render(request,'member_details.html',{'data':data,'house_name':house_name})
-    
+        return render(request, 'member_details.html', {'data': data, 'house_name': house_name})
 
 # k================================================
 
@@ -246,13 +274,14 @@ class Delete(View):
 
 # k================================================
 
-
+@method_decorator(Login_required,name='dispatch')
 class All_Member_View(View):
     def get(self, request,*args,**kwargs):
         data=User.objects.filter(is_superuser=False)
         user = get_object_or_404(UserProfile_Model, user=request.user)
         return render(request,'all_members.html',{'data':data,'user':user})
-    
+
+@method_decorator(Login_required,name='dispatch')  
 class Certificate_View(View):
     def get(self, request,*args,**kwargs):
         data=UserProfile_Model.objects.get(user_id=request.user)
@@ -262,6 +291,7 @@ class Certificate_View(View):
         marriage=Marriage_Record.objects.filter(user_id=id)
         return render(request,'certificates.html',{'data':data,'death':death,'baptism':baptism,'marriage':marriage})
 
+@method_decorator(Login_required,name='dispatch')
 class Death_Certificate_Add_View(View):
     def get(self, request,*args,**kwargs):
         form=Death_Record_Form(user=request.user)
@@ -274,7 +304,8 @@ class Death_Certificate_Add_View(View):
             death_record.save()
             return redirect('certificate')  # Redirect to success page
         return render(request,'death_form.html',{'form':form})
-    
+
+@method_decorator(Login_required,name='dispatch')  
 class Death_Certificate_Update_View(View):
     def get(self, request,*args,**kwargs):
         id=kwargs.get('pk')
@@ -290,13 +321,15 @@ class Death_Certificate_Update_View(View):
             return redirect('certificate')
         else:
             return render(request,'death_form.html',{'form':form})
-        
+
+@method_decorator(Login_required,name='dispatch')
 class Death_Certificate_Delete_View(View):
     def get(self, request,*args,**kwargs):
         id=kwargs.get('pk')
         Death_Record.objects.get(id=id).delete()
         return redirect('certificate')
-    
+
+@method_decorator(Login_required,name='dispatch') 
 class Admin_Approval_View(View):
     def get(self, request,*args,**kwargs):
         user_id=request.user.id
@@ -306,6 +339,7 @@ class Admin_Approval_View(View):
         marriage=Marriage_Record.objects.all().order_by('-id')
         return render(request,'admin_approval.html',{'death':death,'baptism':baptism,'marriage':marriage,'user':user})
 
+@method_decorator(Login_required,name='dispatch')
 class Death_Approval_View(View):
     def post(self, request, record_id, *args, **kwargs):
         death= Death_Record.objects.get(id=record_id)
@@ -367,13 +401,8 @@ class Death_Approval_View(View):
 #             'age': age
 #         })
 
-import os
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from weasyprint import HTML
-import tempfile
-from django.http import Http404
 
+@method_decorator(Login_required,name='dispatch')
 class Death_Certificate_View(View):
     def get(self, request, record_id, *args, **kwargs):
         try:
@@ -422,7 +451,7 @@ class Death_Certificate_View(View):
             'age': age
         })
 
-    
+@method_decorator(Login_required,name='dispatch')  
 class Baptism_Certificate_Add_View(View):
     def get(self, request,*args,**kwargs):
         form=Baptism_Record_Form(user=request.user)
@@ -436,6 +465,7 @@ class Baptism_Certificate_Add_View(View):
             return redirect('certificate')
         return render(request,'baptism_form.html',{'form':form})
 
+@method_decorator(Login_required,name='dispatch')
 class Baptism_Certificate_Update_View(View):
     def get(self, request,*args,**kwargs):
         id=kwargs.get('pk')
@@ -451,13 +481,15 @@ class Baptism_Certificate_Update_View(View):
             return redirect('certificate')
         else:
             return render(request,'baptism_form.html',{'form':form})
-        
+
+@method_decorator(Login_required,name='dispatch')       
 class Baptism_Certificate_Delete_View(View):
     def get(self, request,*args,**kwargs):
         id=kwargs.get('pk')
         Baptism_Record.objects.get(id=id).delete()
         return redirect('certificate')
-    
+
+@method_decorator(Login_required,name='dispatch')  
 class Baptism_Approval_View(View):
     def post(self, request, record_id, *args, **kwargs):
         baptism= Baptism_Record.objects.get(id=record_id)
@@ -475,7 +507,7 @@ class Baptism_Approval_View(View):
 #         formatted_date = today.strftime("%d-%m-%Y")
 #         return render(request,'baptism_certificate.html',{'baptism':baptism,'formatted_date':formatted_date,'dob':dob})
 
-
+@method_decorator(Login_required,name='dispatch')
 class Baptism_Certificate_View(View):
     def get(self, request, record_id, *args, **kwargs):
         # Set a custom temporary directory path
@@ -505,7 +537,7 @@ class Baptism_Certificate_View(View):
         return render(request, 'baptism_certificate.html', {'baptism': baptism, 'formatted_date': formatted_date, 'dob': dob})
 
 
-
+@method_decorator(Login_required,name='dispatch')
 class Auditorium_Add_View(View):
     def get(self,request,*args,**kwargs):
         form=Auditorium_Form()
@@ -523,6 +555,7 @@ class Auditorium_Add_View(View):
             data=Auditorium.objects.all()
             return render(request,'auditorium.html',{'form':form,'data':data,'user':user})
 
+@method_decorator(Login_required,name='dispatch')
 class Auditorium_Update_View(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get('pk')
@@ -541,13 +574,15 @@ class Auditorium_Update_View(View):
             form=Auditorium_Form()
             data=Auditorium.objects.all()
             return redirect('auditorium_add')
-        
+
+@method_decorator(Login_required,name='dispatch')       
 class Auditorium_Delete_View(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get('pk')
         Auditorium.objects.get(id=id).delete()
         return redirect('auditorium_add')
-        
+
+@method_decorator(Login_required,name='dispatch')     
 class Marriage_Certificate_Add_View(View):
     def get(self, request, *args, **kwargs):
         form = Marriage_Record_Form() 
@@ -560,7 +595,8 @@ class Marriage_Certificate_Add_View(View):
             marriage_record.save() 
             form = Marriage_Record_Form() 
         return redirect('certificate')
-    
+
+@method_decorator(Login_required,name='dispatch') 
 class Marriage_Certificate_Update_View(View):
     def get(self, request,*args,**kwargs):
         id=kwargs.get('pk')
@@ -576,13 +612,15 @@ class Marriage_Certificate_Update_View(View):
             return redirect('certificate')
         else:
             return render(request,'marriage_form.html',{'form':form})
-        
+
+@method_decorator(Login_required,name='dispatch')     
 class Marriage_Certificate_Delete_View(View):
     def get(self, request,*args,**kwargs):
         id=kwargs.get('pk')
         Marriage_Record.objects.get(id=id).delete()
         return redirect('certificate')
     
+@method_decorator(Login_required,name='dispatch')
 class Marriage_Approval_View(View):
     def post(self, request, record_id, *args, **kwargs):
         marriage= Marriage_Record.objects.get(id=record_id)
@@ -603,6 +641,7 @@ class Marriage_Approval_View(View):
 # from io import BytesIO
 # from datetime import date
 
+@method_decorator(Login_required,name='dispatch')
 class Marriage_Certificate_View(View):
     def get(self, request, record_id, *args, **kwargs):
         # Fetch the marriage record
@@ -624,14 +663,14 @@ class Marriage_Certificate_View(View):
         # If no download parameter, render the certificate normally
         return render(request, 'marriage_certificate.html', {'marriage': marriage, 'formatted_date': formatted_date})
 
-    
+@method_decorator(Login_required,name='dispatch')   
 class User_Filter_View(View):
     def get(self,request, role,*args, **kwargs):
         user = get_object_or_404(UserProfile_Model, user=request.user)
         users = UserProfile_Model.objects.filter(role=role).exclude(user__is_superuser=True)
         return render(request, 'user_filter.html', {'users': users, 'role': role,'user':user})
     
-    
+@method_decorator(Login_required,name='dispatch')  
 class Donation_Add_View(View):
     def get(self, request, *args, **kwargs):
         form = Donation_Form()
@@ -660,6 +699,7 @@ class Donation_Add_View(View):
             data=Donation.objects.all().order_by('-id')
         return render(request, 'donation_form.html', {'form': form,"data":data,'user':user})
 
+@method_decorator(Login_required,name='dispatch')
 class Donation_Update_View(View):
     def get(self, request, *args, **kwargs):
         id=kwargs.get('pk')
@@ -679,13 +719,14 @@ class Donation_Update_View(View):
             form = Donation_Form()
         return redirect('donation_add')
 
+@method_decorator(Login_required,name='dispatch')
 class Donation_Delete_View(View):
     def get(self, request, *args, **kwargs):
         id=kwargs.get('pk')
         Donation.objects.get(id=id).delete()
         return redirect('donation_add')
 
-
+@method_decorator(Login_required,name='dispatch')
 class Donation_Paid_View(View):
     def get(self, request, *args, **kwargs):
         id = kwargs.get('pk')
@@ -751,11 +792,8 @@ class Donation_Paid_View(View):
             'total_amount': data.total_amount,
             'paid_amount': data.paid_amount
         })
-    
-from django.contrib import messages
-from django.utils.timezone import now
-from datetime import timedelta
-    
+
+@method_decorator(Login_required,name='dispatch')
 class Event_Add_View(View):
     def get(self,request,*args,**kwargs):
         form=Event_Form()
@@ -800,7 +838,7 @@ class Event_Add_View(View):
         user = get_object_or_404(UserProfile_Model, user=request.user)
         return render(request, 'event_form.html', {"form": form,'datas':datas,'user':user})
 
-
+@method_decorator(Login_required,name='dispatch')
 class Event_Update_View(View):
     def get(self, request, *args, **kwargs):
         id = kwargs.get('pk')
@@ -825,12 +863,14 @@ class Event_Update_View(View):
         return redirect('event_add')
 
 
+@method_decorator(Login_required,name='dispatch')
 class Event_Delete_View(View):
     def get(self, request, *args, **kwargs):
         id=kwargs.get('pk')
         Event.objects.get(id=id).delete()
         return redirect('event_add')
 
+@method_decorator(Login_required,name='dispatch')
 class Event_List_View(View):
     def get(self, request, *args, **kwargs):
         # Get start and end date from request
@@ -860,6 +900,7 @@ class Event_List_View(View):
         return render(request, 'event_approval.html', {'page_obj': page_obj, 'user': user, 'start_date': start_date, 'end_date': end_date})
 
 
+@method_decorator(Login_required,name='dispatch')
 class Event_Approval_View(View):
     def post(self, request, record_id, *args, **kwargs):
         datas=Event.objects.all()
@@ -869,6 +910,7 @@ class Event_Approval_View(View):
         event.save()
         return redirect('event_list')
 
+@method_decorator(Login_required,name='dispatch')
 class Approved_Event_View(View):
     def get(self, request, *args, **kwargs):
         start_date = request.GET.get('start_date', '')
@@ -901,7 +943,8 @@ class Approved_Event_View(View):
             'start_date': start_date.strftime("%Y-%m-%d") if start_date else '',
             'end_date': end_date.strftime("%Y-%m-%d") if end_date else '',
         })
-    
+
+@method_decorator(Login_required,name='dispatch')  
 class Death_Members_View(View):
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(UserProfile_Model, user=request.user)

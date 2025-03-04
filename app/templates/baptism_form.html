@@ -74,10 +74,16 @@
                     </div>
                     {% endif %}
                 </div>
-
+                {% if not request.user.is_staff %}
                 <button type="submit" class="btn btn-primary submit-btn">
                     Submit Baptism Record
                 </button>
+                {% else %}
+                <div class="w-100 d-flex justify-content-center">
+                    <a class="btn btn-primary" href="{% url 'admin_approval' %}">Close</a>
+                </div>
+                {% endif %}
+                
             </form>
         </div>
     </div>
