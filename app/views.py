@@ -108,8 +108,10 @@ class Login_View(View):
                 return redirect("admin") 
             else:
                 return redirect("user") 
+                
         form=Login_Form()
-        return render(request, "login.html", {"error": "Invalid credentials",'form':form})
+        error_message = 'Invalid username or password.'
+        return render(request, "login.html", {"error_message": error_message,'form':form})
     
 class Logout_View(View):
     def get(self,request,*args,**kwargs):
@@ -150,24 +152,16 @@ class Admin_View(View):
                                             'total_paid':total_paid,'total_approved_events':total_approved_events,
                                             'total_approved_records':total_approved_records})
     
-# class User_View(View):
-#     def get(self,request):
-#         data=UserProfile_Model.objects.get(user_id=request.user)
-#         obj=UserProfile_Model.objects.filter(house_name_id=data.house_name_id).count()
 
-
-#          # Filter House_Donation only for the user's house
-#         if data.house_name:
-#             donation = House_Donation.objects.filter(house_name=data.house_name, status=False)  
-#         else:
-#             donation = House_Donation.objects.none()  # Returns an empty queryset if no house
-#         return render(request,'user.html',{'data':data,'obj':obj,'donation':donation})
 
 @method_decorator(Login_required,name='dispatch')
 class User_View(View):
     def get(self, request):
         data = UserProfile_Model.objects.get(user_id=request.user)
-        obj = UserProfile_Model.objects.filter(house_name_id=data.house_name_id).count()
+        if data.house_name:
+            obj = UserProfile_Model.objects.filter(house_name=data.house_name).count()
+        else:
+            obj = 0
 
         events=Event.objects.filter(user=request.user).count()
 
@@ -347,60 +341,6 @@ class Death_Approval_View(View):
         death.save()
         return redirect('admin_approval')
 
-# class Death_Certificate_View(View):
-#     def get(self, request, record_id, *args, **kwargs):
-#         death= Death_Record.objects.get(id=record_id)
-#         data=death.member
-#         person=UserProfile_Model.objects.get(user=data)
-#         age=person.age
-#         today = date.today()
-#         formatted_date = today.strftime("%d-%m-%Y")
-#         return render(request,'death_certificate.html',{'death':death,'formatted_date':formatted_date,'age':age})
-
-# from django.http import HttpResponse
-# from django.views import View
-# from django.template.loader import render_to_string
-# from weasyprint import HTML
-# import tempfile
-# from datetime import date
-# from .models import Death_Record, UserProfile_Model
-
-# class Death_Certificate_View(View):
-#     def get(self, request, record_id, *args, **kwargs):
-#         # Fetch death record details
-#         death = Death_Record.objects.get(id=record_id)
-#         data = death.member
-#         person = UserProfile_Model.objects.get(user=data)
-#         age = person.age
-#         today = date.today()
-#         formatted_date = today.strftime("%d-%m-%Y")
-
-#         # Render the HTML template with context
-#         html_content = render_to_string('death_certificate.html', {
-#             'death': death,
-#             'formatted_date': formatted_date,
-#             'age': age
-#         })
-
-#         if "download" in request.GET:
-#             # Generate PDF and return response
-#             response = HttpResponse(content_type='application/pdf')
-#             response['Content-Disposition'] = 'attachment; filename="Death_Certificate.pdf"'
-
-#             with tempfile.NamedTemporaryFile(delete=True) as temp_file:
-#                 HTML(string=html_content).write_pdf(temp_file.name)
-#                 with open(temp_file.name, 'rb') as pdf:
-#                     response.write(pdf.read())
-
-#             return response
-
-#         # Render normal HTML page if not downloading
-#         return render(request, 'death_certificate.html', {
-#             'death': death,
-#             'formatted_date': formatted_date,
-#             'age': age
-#         })
-
 
 @method_decorator(Login_required,name='dispatch')
 class Death_Certificate_View(View):
@@ -497,15 +437,6 @@ class Baptism_Approval_View(View):
         baptism.save()
         return redirect('admin_approval')
     
-# class Baptism_Certificate_View(View):
-#     def get(self, request, record_id, *args, **kwargs):
-#         baptism= Baptism_Record.objects.get(id=record_id)
-#         data=baptism.member
-#         person=UserProfile_Model.objects.get(user=data)
-#         dob=person.date_of_birth
-#         today = date.today()
-#         formatted_date = today.strftime("%d-%m-%Y")
-#         return render(request,'baptism_certificate.html',{'baptism':baptism,'formatted_date':formatted_date,'dob':dob})
 
 @method_decorator(Login_required,name='dispatch')
 class Baptism_Certificate_View(View):
@@ -627,19 +558,7 @@ class Marriage_Approval_View(View):
         marriage.is_approved = not marriage.is_approved  # Toggle between True/False
         marriage.save()
         return redirect('admin_approval')
-    
-# class Marriage_Certificate_View(View):
-#     def get(self, request, record_id, *args, **kwargs):
-#         marriage= Marriage_Record.objects.get(id=record_id)
-#         today = date.today()
-#         formatted_date = today.strftime("%d-%m-%Y")
-#         return render(request,'marriage_certificate.html',{'marriage':marriage,'formatted_date':formatted_date})
 
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from weasyprint import HTML
-# from io import BytesIO
-# from datetime import date
 
 @method_decorator(Login_required,name='dispatch')
 class Marriage_Certificate_View(View):
@@ -950,4 +869,26 @@ class Death_Members_View(View):
         user = get_object_or_404(UserProfile_Model, user=request.user)
         death=Death_Record.objects.filter(is_approved=True)
         return render(request, 'death_members.html', {'death': death, 'user': user})
+    
+
+class Family_Members_View(View):
+    template_name = 'family_members.html'
+
+    def get(self, request, *args, **kwargs):
+        # Get the current user's profile
+        user_profile = UserProfile_Model.objects.filter(user=request.user).first()
+        data=UserProfile_Model.objects.get(user_id=request.user)
         
+        
+        # Fetch family members with the same house_name (excluding the current user)
+        family_members = []
+        if user_profile and user_profile.house_name:
+            family_members = UserProfile_Model.objects.filter(
+                house_name=user_profile.house_name
+            ).exclude(user=request.user)
+
+        context = {
+            'family_members': family_members,
+            'data':data
+        }
+        return render(request, self.template_name, context)

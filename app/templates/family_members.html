@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaintConnect - User Event Booking</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-menu a {
+            padding: 0.75rem 1.5rem;
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-menu i {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+        }
+
+        /* Profile Styles */
+        .profile-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-position: center;
+            background-size: cover;
+        }
+
+        .sidebar-a {
+            text-decoration: none;
+        }
+
+        /* Family Members Card */
+        .family-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .member-card {
+            border-radius: 0.5rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .member-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto;
+        }
+        
+        .member-img-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        
+        .member-img-placeholder i {
+            font-size: 2rem;
+            color: #adb5bd;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .mobile-toggle {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 1100;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 0.25rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle d-md-none" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <a class="sidebar-a" href="{% url 'home' %}">
+                <h4 class="m-0 text-primary">SaintConnect</h4>
+            </a>
+        </div>
+        <div class="sidebar-menu">
+            <a href="{% url 'user' %}" class="active"><i class="fas fa-home"></i> Home</a>
+            <a href="{% url 'event_add' %}"><i class="bi bi-buildings"></i> Auditorium</a>
+            <a href="{% url 'approved_events' %}"><i class="fas fa-calendar"></i> Events</a>
+            <a href="{% url 'certificate' %}"><i class="fas fa-envelope"></i> Certificates</a>
+            <a href="{% url 'family' %}"><i class="fas fa-users"></i> Family</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar d-flex justify-content-between align-items-center">
+            <h4 class="m-0">Dashboard</h4>
+            <div class="profile-dropdown dropdown">
+                <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                    {% if data.profile_picture %}
+                    <div style="background-image: url('{{ data.profile_picture.url }}')" alt="Profile"
+                        class="profile-img"></div>
+                    <span>{{request.user}}</span>
+                    {% else %}
+                    <div style="border: 1px solid black;" alt="Profile"
+                        class="profile-img"></div>
+                    <span>{{request.user}}</span>
+                    {% endif %}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'profile' data.id%}"><i class="fas fa-user me-2"></i> Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Family Members Section - Card Layout -->
+        <div class="family-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="m-0"><i class="fas fa-users text-primary me-2"></i> Family Members</h4>
+                {% if family_members %}
+                <span class="badge bg-primary">{{ family_members.count }} Members</span>
+                {% endif %}
+            </div>
+            
+            {% if family_members %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for member in family_members %}
+                        <div class="col">
+                            <div class="card member-card">
+                                <div class="card-body text-center pt-4">
+                                    {% if member.profile_picture %}
+                                    <img src="{{ member.profile_picture.url }}" class="member-img mb-3" alt="{{ member.name }}">
+                                    {% else %}
+                                    <div class="member-img-placeholder mb-3">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <h5 class="card-title">{{ member.name }}</h5>
+                                    <p class="card-text text-muted mb-1">{{ member.role }}</p>
+                                    <p class="card-text"><small class="text-muted">{{ member.house_name.name }}</small></p>
+                                    
+                                    <hr>
+                                    
+                                    <div class="row g-2 text-start">
+                                        {% if member.age %}
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Age</small>
+                                            <span>{{ member.age }} years</span>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if member.gender %}
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Gender</small>
+                                            <span>{{ member.gender }}</span>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if member.date_of_birth %}
+                                        <div class="col-12 mt-2">
+                                            <small class="text-muted d-block">Date of Birth</small>
+                                            <span>{{ member.date_of_birth|date:"F d, Y" }}</span>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if member.email %}
+                                        <div class="col-12 mt-2">
+                                            <small class="text-muted d-block">Email</small>
+                                            <span>{{ member.email }}</span>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if member.phone_number %}
+                                        <div class="col-12 mt-2">
+                                            <small class="text-muted d-block">Phone</small>
+                                            <span>{{ member.phone_number }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No family members .
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+    </script>
+</body>
+
+</html>
