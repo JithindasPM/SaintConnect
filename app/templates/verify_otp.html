@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .otp-input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            margin: 0 5px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md bg-white shadow-2xl rounded-xl p-8">
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-shield-alt text-purple-600 mr-2"></i>Verify OTP
+            </h2>
+            <p class="text-gray-500">Enter the 6-digit code sent to your email</p>
+        </div>
+        
+        <form method="POST" class="space-y-4" id="otpForm">
+            {% csrf_token %}
+            <div class="flex justify-center items-center space-x-2 mb-4">
+                <input type="text" maxlength="1" class="otp-input rounded-lg border focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+                <input type="text" maxlength="1" class="otp-input rounded-lg border focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+                <input type="text" maxlength="1" class="otp-input rounded-lg border focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+                <input type="text" maxlength="1" class="otp-input rounded-lg border focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+                <input type="text" maxlength="1" class="otp-input rounded-lg border focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+                <input type="text" maxlength="1" class="otp-input rounded-lg border focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+            </div>
+            
+            <input type="hidden" name="otp" id="combinedOTP">
+            
+            <button 
+                type="submit" 
+                class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center"
+            >
+                <i class="fas fa-check-circle mr-2"></i>
+                Verify OTP
+            </button>
+        </form>
+        
+        <div class="text-center mt-6">
+            <p class="text-sm text-gray-500">
+                Didn't receive the code? 
+                <a href="#" class="text-purple-600 hover:underline">Resend OTP</a>
+            </p>
+            <div id="timer" class="mt-2 text-sm text-gray-500"></div>
+        </div>
+    </div>
+
+    <script>
+        // OTP Input Handling
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const combinedOTPInput = document.getElementById('combinedOTP');
+        const otpForm = document.getElementById('otpForm');
+        const timerElement = document.getElementById('timer');
+
+        // Auto-move between OTP input fields
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', () => {
+                if (input.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                
+                // Combine OTP inputs
+                const combinedOTP = Array.from(otpInputs).map(i => i.value).join('');
+                combinedOTPInput.value = combinedOTP;
+            });
+
+            // Allow backspace to move to previous input
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Countdown Timer
+        function startTimer(duration) {
+            let timer = duration;
+            const countdownInterval = setInterval(() => {
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+
+                timerElement.textContent = `OTP expires in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (--timer < 0) {
+                    clearInterval(countdownInterval);
+                    timerElement.textContent = 'OTP Expired';
+                }
+            }, 1000);
+        }
+
+        // Start a 5-minute countdown
+        startTimer(300);
+    </script>
+</body>
+</html>

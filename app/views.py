@@ -892,3 +892,87 @@ class Family_Members_View(View):
             'data':data
         }
         return render(request, self.template_name, context)
+
+
+import random
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.conf import settings
+
+# Store OTPs temporarily (Can be stored in a session instead)
+otp_storage = {}
+
+def forgot_password(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+
+        if not username:
+            messages.error(request, "Username field is empty!")
+            return redirect('forgot_password')
+
+        try:
+            user = User.objects.get(username=username)
+            a=UserProfile_Model.objects.get(user=user.id)
+            email = a.email
+            
+            # Generate and store OTP
+            otp = random.randint(100000, 999999)
+            otp_storage[username] = otp
+
+            # Send OTP via email
+            send_mail(
+                "Your OTP for Password Reset",
+                f"Hello {user.username},\n\nYour OTP is: {otp}\n\nDo not share this with anyone.",
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+
+            request.session['reset_username'] = username
+            return redirect('verify_otp')
+
+        except User.DoesNotExist:
+            messages.error(request, "Username not found!")
+    
+    return render(request, "forgot_password.html")
+
+
+
+def verify_otp(request):
+    if request.method == "POST":
+        entered_otp = request.POST.get("otp")
+        username = request.session.get("reset_username")
+
+        if username in otp_storage and str(otp_storage[username]) == entered_otp:
+            return redirect("reset_password")  # Redirect to reset password page
+        else:
+            messages.error(request, "Invalid OTP. Please try again.")
+
+    return render(request, "verify_otp.html")
+
+
+from django.contrib.auth.hashers import make_password
+
+def reset_password(request):
+    if request.method == "POST":
+        new_password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        username = request.session.get("reset_username")
+
+        if new_password == confirm_password:
+            try:
+                user = User.objects.get(username=username)
+                user.password = make_password(new_password)  # Hash the password
+                user.save()
+                
+                messages.success(request, "Password reset successful! Please login.")
+                return redirect("login")  # Redirect to login page
+            except User.DoesNotExist:
+                messages.error(request, "User not found!")
+
+        else:
+            messages.error(request, "Passwords do not match!")
+
+    return render(request, "reset_password.html")

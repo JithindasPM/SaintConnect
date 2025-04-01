@@ -64,6 +64,7 @@ from app.views import Event_Approval_View
 from app.views import Approved_Event_View
 from app.views import Death_Members_View
 from app.views import Family_Members_View
+from app.views import forgot_password, verify_otp, reset_password
 
 
 
@@ -116,6 +117,8 @@ urlpatterns = [
     path('death_members/', Death_Members_View.as_view(),name='death_members'),
     path('family/', Family_Members_View.as_view(),name='family'),
     
-
+    path('forgot-password/', forgot_password, name='forgot_password'),
+    path('verify-otp/', verify_otp, name='verify_otp'),
+    path('reset-password/', reset_password, name='reset_password'),
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)  

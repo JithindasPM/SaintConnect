@@ -265,6 +265,11 @@
                 margin-right: 0.25rem !important;
             }
         }
+        .card {
+            max-width: 800px; /* Increase max width */
+            width: 100%; /* Ensure it takes full available space */
+            margin: 0 auto; /* Center it */
+        }
     </style>
 </head>
 
@@ -376,9 +381,10 @@
         <!-- Table Card -->
         <div class="table-container">
             <div class="mb-4">
-                <h4 class="m-0">Bookings</h4>
+                <h2 class="m-0 text-muted">Bookings</h2>
             </div>
             <div class="table-responsive">
+                {% if datas %}
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -414,15 +420,20 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="2" class="text-center py-4 text-muted">
-                                No Bookings
-                            </td>
-                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+                {% else %}
+                <div class="no-bookings-card text-center p-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076402.png" alt="No Bookings"
+                        class="no-bookings-img mb-3">
+                    <h3 class="text-muted">No Bookings Found</h3>
+                    <p class="text-muted">It looks like you haven't booked any events yet. Start by creating a new booking now!</p>
+                    <a href="" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i> Book an Auditorium
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -441,6 +452,14 @@
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('active');
         }
+            document.addEventListener("DOMContentLoaded", function () {
+                let today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+                let dateField = document.querySelector("input[type='date']");
+                if (dateField) {
+                    dateField.setAttribute("min", today);
+                }
+            });
+        
     </script>
 </body>
 
